@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e2c36edf30ba9145a93222f8a3e196a, type: 3}
+  m_Name: 3S
+  m_EditorClassIdentifier: 
+  name: 3S
+  value: 0
+  cardMaterial: {fileID: 2100000, guid: 45b6b258fd57d524cb2d2013a0727b85, type: 2}

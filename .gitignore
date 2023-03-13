@@ -1,0 +1,9 @@
+*.csproj
+Library/*
+Logs/*
+*.sln
+obj/*
+UserSettings/*
+Temp/*
+*.apk
+.idea
