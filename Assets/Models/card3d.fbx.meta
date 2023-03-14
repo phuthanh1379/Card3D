@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: 7f5559de3f9b11d4ab79a27e2182b94f
+guid: d7c5371cd48a293479b4fe56f27544ca
 ModelImporter:
   serializedVersion: 22103
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CardBackMaterial
+    second: {fileID: 2100000, guid: d1de0ca8ed5940b46bbdeefde21b48f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CardFrontMaterial
+    second: {fileID: 2100000, guid: 5e7e373b5bd27d84e9551d14d42662f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CardSideMaterial
+    second: {fileID: 2100000, guid: 8347ada98636a244ca456b5bb3500f9f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

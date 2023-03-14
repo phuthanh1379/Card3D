@@ -5,5 +5,5 @@ public class CardInfo : ScriptableObject
 {
     public new string name;
     public int value;
-    public Material cardMaterial;
+    public Texture cardTexture;
 }

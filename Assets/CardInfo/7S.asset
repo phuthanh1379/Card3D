@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 7S
   value: 0
-  cardMaterial: {fileID: 2100000, guid: 7e9f7d70cd97e3a4f8c5ede39e9fa3f4, type: 2}
+  cardTexture: {fileID: 2800000, guid: 2a5f4f68918db4c72b4b6840369e7465, type: 3}

@@ -1,13 +1,25 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoardController : MonoBehaviour
 {
     public Vector3 currentMousePosition;
-    [SerializeField] private Camera mainCamera;
+    private Camera mainCamera;
 
     public static BoardController Instance;
+    
+    [SerializeField] private List<Transform> slots = new();
 
+    private void OnDrawGizmos()
+    {
+        if (slots.Count == 0) return;
+        foreach (var slot in slots)
+        {
+            Gizmos.DrawWireCube(slot.position, new Vector3(1f, 1f, 1f));
+        }
+    }
+    
     private void Awake()
     {
         Instance = this;
