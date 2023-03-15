@@ -10,13 +10,20 @@ public class BoardController : MonoBehaviour
     public static BoardController Instance;
     
     [SerializeField] private List<Transform> slots = new();
+    [SerializeField] private List<Transform> hands = new();
 
     private void OnDrawGizmos()
     {
         if (slots.Count == 0) return;
         foreach (var slot in slots)
         {
-            Gizmos.DrawWireCube(slot.position, new Vector3(1f, 1f, 1f));
+            Gizmos.DrawWireCube(slot.position + new Vector3(0f, 0.25f, 0f), new Vector3(0.85f, 0.5f, 0.85f));
+        }
+        
+        if (hands.Count == 0) return;
+        foreach (var hand in hands)
+        {
+            Gizmos.DrawWireCube(hand.position + new Vector3(0f, 0.25f, 0f), new Vector3(0.85f, 0.5f, 0.85f));
         }
     }
     
@@ -33,6 +40,7 @@ public class BoardController : MonoBehaviour
     private void Update()
     {
         var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        // var hits = new RaycastHit[] { };
         var hits = Physics.RaycastAll(ray);
 
         foreach (var hit in hits)

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -11,6 +8,9 @@ public class DraggableObject : MonoBehaviour
     
     private float _startYPos;
     private bool _isSnappable = true;
+    private bool _isTriggered = false;
+
+    private Tween fallTween;
 
     private void Awake()
     {
@@ -20,6 +20,17 @@ public class DraggableObject : MonoBehaviour
     private void Start()
     {
         _startYPos = 0f;
+
+        fallTween = transform.DOMoveY(0f, 0.5f);
+        fallTween.Play();
+    }
+
+    private void FixedUpdate()
+    {
+        // if (_isSnappable && !_isTriggered)
+        // {
+        //     // transform.Translate(new Vector3(0f, -0.1f, 0f));
+        // }
     }
 
     private void OnMouseDrag()
@@ -35,17 +46,29 @@ public class DraggableObject : MonoBehaviour
         rb.rotation = Quaternion.Euler(new Vector3(rb.velocity.z * mult, 0f, -rb.velocity.x * mult));
     }
 
-    private void OnMouseExit()
+    private void OnMouseUp()
     {
         _isSnappable = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
+        Debug.Log($"{other.name}, isSnappable={_isSnappable}");
         if (!_isSnappable) return;
-        if (other.CompareTag("TableSlot"))
-            transform.DOMove(other.transform.position, 0.5f).Play();
-            // transform.position = other.transform.position;
+        if (!other.CompareTag("TableSlot")) return;
+
+        _isTriggered = true;
+        // fallTween.Pause();
+        
+        // rb.velocity = Vector3.zero;
+        var sequence = DOTween.Sequence();
+        var position = other.transform.position;
+        
+        Debug.Log($"x={position.x}, z={position.z}");
+        
+        sequence
+            .Append(transform.DOMoveX(position.x, 0.5f))
+            .Join(transform.DOMoveZ(position.z, 0.5f))
+            .Play();
     }
 }
