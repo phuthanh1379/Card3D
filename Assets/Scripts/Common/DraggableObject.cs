@@ -25,50 +25,42 @@ public class DraggableObject : MonoBehaviour
         fallTween.Play();
     }
 
-    private void FixedUpdate()
-    {
-        // if (_isSnappable && !_isTriggered)
-        // {
-        //     // transform.Translate(new Vector3(0f, -0.1f, 0f));
-        // }
-    }
-
     private void OnMouseDrag()
     {
-        // rb.isKinematic = false;
         _isSnappable = false;
         var newWorldPosition = new Vector3(table.currentMousePosition.x, _startYPos + 1, table.currentMousePosition.z);
         
-        var difference = newWorldPosition - transform.position;
+        // var difference = newWorldPosition - transform.position;
+        // var mult = 2;
+        // rb.velocity = 10 * difference;
+        // rb.rotation = Quaternion.Euler(new Vector3(rb.velocity.z * mult, 0f, -rb.velocity.x * mult));
 
-        var mult = 2;
-        rb.velocity = 10 * difference;
-        rb.rotation = Quaternion.Euler(new Vector3(rb.velocity.z * mult, 0f, -rb.velocity.x * mult));
+        transform.DOMove(newWorldPosition, 0.5f).Play();
     }
 
     private void OnMouseUp()
     {
         _isSnappable = true;
+        Debug.Log("Fall!");
+        fallTween.Restart();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"{other.name}, isSnappable={_isSnappable}");
         if (!_isSnappable) return;
         if (!other.CompareTag("TableSlot")) return;
 
         _isTriggered = true;
-        // fallTween.Pause();
+        fallTween.Pause();
         
         // rb.velocity = Vector3.zero;
         var sequence = DOTween.Sequence();
-        var position = other.transform.position;
+        var position = other.GetComponent<BoardSlot>().GetSnapPosition();
         
-        Debug.Log($"x={position.x}, z={position.z}");
+        Debug.Log($"x={position.x}, y={position.y}, z={position.z}");
         
         sequence
-            .Append(transform.DOMoveX(position.x, 0.5f))
-            .Join(transform.DOMoveZ(position.z, 0.5f))
+            .Append(transform.DOMove(position, 0.5f))
             .Play();
     }
 }
