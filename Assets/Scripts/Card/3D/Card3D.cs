@@ -1,22 +1,25 @@
 using UnityEngine;
 
-public class Card3D : MonoBehaviour
+namespace Card_3D
 {
-    private CardInfo info;
-    [SerializeField] private MeshRenderer cardRenderer;
-
-    public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial)
+    public class Card3D : MonoBehaviour
     {
-        info = cardInfo;
-        name = cardInfo.name;
-        
-        var material = cardRenderer.materials[2];
-        material.mainTexture = cardInfo.cardTexture;
-        cardRenderer.materials = new[]
+        private CardInfo info;
+        [SerializeField] private MeshRenderer cardRenderer;
+
+        public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial)
         {
-            sideMaterial,
-            backMaterial,
-            material
-        };
+            info = cardInfo;
+            name = cardInfo.name;
+        
+            var material = cardRenderer.materials[2];
+            material.mainTexture = cardInfo.cardTexture;
+            cardRenderer.materials = new[]
+            {
+                sideMaterial,
+                backMaterial,
+                material
+            };
+        }
     }
 }
