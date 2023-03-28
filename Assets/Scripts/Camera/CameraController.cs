@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -13,8 +14,10 @@ public class CameraController : MonoBehaviour
 
     private static readonly Vector3 OverLook = new Vector3(0f, 5f, -3f);
     private const float OverLookAngle = 70f;
+    private const float OverLookFOV = 25f;
     private static readonly Vector3 PlayerLook = new Vector3(0f, 2f, -4f);
     private const float PlayerLookAngle = 30f;
+    private const float PlayerLookFOV = 60f;
 
     private Sequence overLookSequence;
     private Sequence playerLookSequence;
@@ -27,10 +30,12 @@ public class CameraController : MonoBehaviour
         overLookSequence = DOTween.Sequence();
         var overMoveTween = transform.DOMove(OverLook, Duration);
         var overRotateTween = transform.DORotate(new Vector3(OverLookAngle, 0f, 0f), Duration);
-        // var orthoTween
+        var overCameraTween = mainCamera.DOFieldOfView(OverLookFOV, Duration);
+
         overLookSequence
             .Append(overMoveTween)
             .Join(overRotateTween)
+            .Join(overCameraTween)
             .SetAutoKill(false)
             .SetEase(EaseType)
             ;
@@ -38,14 +43,19 @@ public class CameraController : MonoBehaviour
         playerLookSequence = DOTween.Sequence();
         var playerMoveTween = transform.DOMove(PlayerLook, Duration);
         var playerRotateTween = transform.DORotate(new Vector3(PlayerLookAngle, 0f, 0f), Duration);
-        // var orthoTween
+        var playerCameraTween = mainCamera.DOFieldOfView(PlayerLookFOV, Duration);
+
         playerLookSequence
             .Append(playerMoveTween)
             .Join(playerRotateTween)
+            .Join(playerCameraTween)
             .SetAutoKill(false)
             .SetEase(EaseType)
             ;
-        
+    }
+
+    private void Start()
+    {
         ChangeMode(CameraMode.Over);
     }
 

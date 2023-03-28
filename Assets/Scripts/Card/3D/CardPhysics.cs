@@ -25,7 +25,7 @@ namespace Card_3D
         {
             _startYPos = 0f;
 
-            fallTween.Play();
+            // fallTween.Play();
         }
         
         private void OnMouseDrag()
@@ -61,7 +61,7 @@ namespace Card_3D
             var slot = other.GetComponent<BoardSlot>();
             var position = slot == null ? other.transform.position : slot.GetSnapPosition();
         
-            Debug.Log($"x={position.x}, y={position.y}, z={position.z}");
+            // Debug.Log($"x={position.x}, y={position.y}, z={position.z}");
         
             sequence
                 .Append(transform.DOMove(position, 0.5f))
