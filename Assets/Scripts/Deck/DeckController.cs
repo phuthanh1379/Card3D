@@ -17,10 +17,17 @@ public class DeckController : MonoBehaviour
     
     private List<Card3D> _cards = new();
     private const float CardWidth = 0.001f;
+    private const float Delay = 0.1f;
 
     private void Start()
     {
         SpawnCards();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+            PlayCardsFx();
     }
 
     private void SpawnCards()
@@ -35,10 +42,19 @@ public class DeckController : MonoBehaviour
     
     private void SpawnCard(CardInfo info, float yPos)
     {
-        var card = Instantiate(cardPrefab, new Vector3(0f, yPos, 0f), Quaternion.identity);
+        var newPos = transform.position + new Vector3(0f, yPos, 0f);
+        var card = Instantiate(cardPrefab, newPos, Quaternion.identity);
         card.transform.SetParent(transform);
         card.RenderInfo(info, backMaterial, sideMaterial);
      
         _cards.Add(card);
+    }
+
+    private void PlayCardsFx()
+    {
+        for (var i = 0; i < _cards.Count; i++)
+        {
+            _cards[i].PlayEffect(i * Delay);
+        }
     }
 }

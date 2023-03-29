@@ -30,12 +30,12 @@ public class CameraController : MonoBehaviour
         overLookSequence = DOTween.Sequence();
         var overMoveTween = transform.DOMove(OverLook, Duration);
         var overRotateTween = transform.DORotate(new Vector3(OverLookAngle, 0f, 0f), Duration);
-        var overCameraTween = mainCamera.DOFieldOfView(OverLookFOV, Duration);
+        // var overCameraTween = mainCamera.DOFieldOfView(OverLookFOV, Duration);
 
         overLookSequence
             .Append(overMoveTween)
             .Join(overRotateTween)
-            .Join(overCameraTween)
+            // .Join(overCameraTween)
             .SetAutoKill(false)
             .SetEase(EaseType)
             ;
@@ -43,12 +43,12 @@ public class CameraController : MonoBehaviour
         playerLookSequence = DOTween.Sequence();
         var playerMoveTween = transform.DOMove(PlayerLook, Duration);
         var playerRotateTween = transform.DORotate(new Vector3(PlayerLookAngle, 0f, 0f), Duration);
-        var playerCameraTween = mainCamera.DOFieldOfView(PlayerLookFOV, Duration);
+        // var playerCameraTween = mainCamera.DOFieldOfView(PlayerLookFOV, Duration);
 
         playerLookSequence
             .Append(playerMoveTween)
             .Join(playerRotateTween)
-            .Join(playerCameraTween)
+            // .Join(playerCameraTween)
             .SetAutoKill(false)
             .SetEase(EaseType)
             ;
