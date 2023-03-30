@@ -1,14 +1,16 @@
-using DG.Tweening;
 using UnityEngine;
 
 namespace Card_3D
 {
-    public class Card3D : MonoBehaviour
+    public class Card3D : CardAnimation
     {
         private CardInfo info;
         [SerializeField] private MeshRenderer cardRenderer;
 
-        private Sequence sequence;
+        public int Index { get; set; }
+        public Vector3 DeckPosition { get; set; }
+        public Vector3 ShowTrumpPosition { get; set; }
+        private float _delay;
 
         public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial)
         {
@@ -23,25 +25,22 @@ namespace Card_3D
                 backMaterial,
                 material
             };
+
+            _delay = (Index + 1) * GameConstants.CardAnimDuration;
+
+            InitShowTrumpSequence(ShowTrumpPosition);
+            InitIntroSequence(DeckPosition);
+            PlayIntroSequence(_delay);
+        }
+        
+        public void PlayEffect()
+        {
+            PlayShowTrumpSequence(_delay);
         }
 
-        private void InitEffect()
+        public void PlayEffectReverse()
         {
-            sequence = DOTween.Sequence();
-            var scale1 = transform.DOScale(Vector3.one * 1.2f, 0.2f);
-            var scale2 = transform.DOScale(Vector3.one, 0.2f);
-
-            sequence.Append(scale1)
-                .Append(scale2)
-                .SetAutoKill(false);
-        }
-
-        public void PlayEffect(float t)
-        {
-            Debug.Log($"Play: Delay={t}");
-            sequence
-                .SetDelay(t)
-                .Play();
+            PlayShowTrumpSequenceReverse(_delay);
         }
     }
 }
