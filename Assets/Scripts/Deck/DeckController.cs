@@ -17,7 +17,7 @@ public class DeckController : MonoBehaviour
     [SerializeField] private Transform showTrumpTarget;
 
     private List<Card3D> _cards = new();
-    private const float CardWidth = 0.001f;
+    private List<Card3D> _dealt = new();
 
     private void Start()
     {
@@ -27,10 +27,10 @@ public class DeckController : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
-            PlayCardsFx();
+            ShowTrump(1);
         
         if (Input.GetKeyDown(KeyCode.Q))
-            PlayCardsFxRev();
+            BackToDeck();
     }
 
     private void SpawnCards()
@@ -39,47 +39,88 @@ public class DeckController : MonoBehaviour
         var rnd = new System.Random();
         for (var i = 0; i < quantity; i++)
         {
-            SpawnCard(cardInfo[rnd.Next(cardInfo.Count)], i * CardWidth, i);
+            SpawnCard(cardInfo[rnd.Next(cardInfo.Count)], i * GameConstants.CardWidth, i);
         }
     }
     
     private void SpawnCard(CardInfo info, float yPos, int index)
     {
-        // var newPos = transform.position + new Vector3(0f, yPos, 0f);
         var newPos = transform.position + new Vector3(0f, 4f, 0f);
         var card = Instantiate(cardPrefab, newPos, Quaternion.identity);
         card.transform.SetParent(transform);
 
         card.Index = index;
-        card.DeckPosition = new Vector3(0f, yPos, 0f);
-        card.ShowTrumpPosition = showTrumpTarget.position + new Vector3(0f, yPos, 0f);
+        // card.DeckPosition = new Vector3(0f, yPos, 0f);
+        // card.ShowTrumpPosition = showTrumpTarget.position + new Vector3(0f, yPos, 0f);
         
-        card.RenderInfo(info, backMaterial, sideMaterial);
+        card.RenderInfo(info, backMaterial, sideMaterial, transform);
      
         _cards.Add(card);
     }
 
-    private void PlayCardsFx()
+    /// <summary>
+    /// Make all cards go back to the deck
+    /// </summary>
+    private void BackToDeck()
     {
-        foreach (var card in _cards)
+        if (_dealt.Count > 0)
         {
-            card.PlayEffect();
+            _cards.AddRange(_dealt);
+            _dealt.Clear();
         }
-    }
-    
-    private void PlayCardsFxRev()
-    {
+
+        if (_cards.Count <= 0) return;
         foreach (var card in _cards)
         {
-            card.PlayEffectReverse();
+            card.JumpRotateCard(transform, false);
         }
     }
 
-    public void DealCard(Transform target)
+    private void ShowTrump(int num)
     {
+        if (_cards.Count <= 0) return;
+
+        for (var i = 0; i < num; i++)
+        {
+            _cards[^ (i + 1)].JumpRotateCard(showTrumpTarget, false);
+        }
+    }
+    
+    public void DealCard(int step, Transform target)
+    {
+        if (_cards.Count <= 0) return;
+
         // Top card
-        var card = _cards[^1];
+        for (var i = 0; i < step; i++)
+        {
+            var card = _cards[^1];
+            _dealt.Add(card);
+            _cards.Remove(card);
+            card.JumpRotateCard(target);
+        }
+    }
+
+    public void MoveCards(Transform target)
+    {
+        if (_cards.Count <= 0)
+        {
+            if (_dealt.Count <= 0) return;
+            foreach (var card in _dealt)
+            {
+                card.JumpRotateCard(target);
+            }
+        }
+        else
+        {
+            foreach (var card in _cards)
+            {
+                card.JumpRotateCard(target);
+            }
+        }
+    }
+
+    public void PickUpCards(Transform target)
+    {
         
-        card.PlayDealSequence(target);
     }
 }

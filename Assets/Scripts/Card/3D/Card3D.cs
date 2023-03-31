@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 namespace Card_3D
@@ -8,11 +9,11 @@ namespace Card_3D
         [SerializeField] private MeshRenderer cardRenderer;
 
         public int Index { get; set; }
-        public Vector3 DeckPosition { get; set; }
-        public Vector3 ShowTrumpPosition { get; set; }
+
+        private float _yPos;
         private float _delay;
 
-        public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial)
+        public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial, Transform deck)
         {
             info = cardInfo;
             name = cardInfo.name;
@@ -27,32 +28,31 @@ namespace Card_3D
             };
 
             _delay = (Index + 1) * GameConstants.CardAnimDuration;
+            _yPos = (Index + 1) * GameConstants.CardWidth;
+            
+            // Intro sequence
+            var sequence = DOTween.Sequence();
+            sequence
+                .Append(Move(deck.position + new Vector3(0f, _yPos, 0f)))
+                .Join(Rotate(deck.rotation.eulerAngles))
+                .SetDelay(_delay)
+                .Play();
+        }
 
-            InitShowTrumpSequence(ShowTrumpPosition);
-            InitIntroSequence(DeckPosition);
-            PlayIntroSequence(_delay);
+        public void JumpRotateCard(Transform target, bool isDelayed = true)
+        {
+            var pos = target.position + new Vector3(0f, _yPos, 0f);
+            var rot = target.rotation.eulerAngles;
+
+            var delay = isDelayed ? _delay : 0;
+
+            var sequence = DOTween.Sequence();
+            sequence
+                .Append(Jump(pos))
+                .Join(Rotate(rot))
+                .SetDelay(delay)
+                .Play();
         }
         
-        public void PlayEffect()
-        {
-            PlayShowTrumpSequence(_delay);
-        }
-
-        public void PlayEffectReverse()
-        {
-            PlayShowTrumpSequenceReverse(_delay);
-        }
-
-        private bool _isInit = false;
-        public void PlayDealSequence(Transform target)
-        {
-            if (!_isInit)
-            {
-                InitDealSequence(target);
-                _isInit = true;
-            }
-            else
-                PlayDealSequence(0);
-        }
     }
 }

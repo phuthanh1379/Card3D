@@ -14,12 +14,40 @@ public class BoardManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-            DealCard(hands[0]);
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            MoveCards(hands[0]);
+        
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            MoveCards(hands[1]);
+        
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            MoveCards(hands[2]);
+        
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            MoveCards(hands[3]);
+        
+        if (Input.GetKeyDown(KeyCode.Space))
+            DealSteps();
     }
 
-    private void DealCard(Transform target)
+    private void DealSteps()
     {
-        deck.DealCard(target);
+        foreach (var step in steps)
+        {
+            foreach (var hand in hands)
+            {
+                DealCard(step, hand);
+            }
+        }
+    }
+
+    private void DealCard(int step, Transform target)
+    {
+        deck.DealCard(step, target);
+    }
+
+    private void MoveCards(Transform target)
+    {
+        deck.MoveCards(target);
     }
 }
