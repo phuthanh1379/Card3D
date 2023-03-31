@@ -9,8 +9,11 @@ namespace Card_3D
     {
         private Sequence showTrumpSequence;
         private Sequence introSequence;
+        private Sequence dealSequence;
 
         private const float Duration = 0.3f;
+
+        #region Show Trump (Move + Jump + Rotate)
 
         protected void InitShowTrumpSequence(Vector3 target)
         {
@@ -39,6 +42,10 @@ namespace Card_3D
                 .PlayBackwards();
         }
 
+        #endregion
+
+        #region Intro (Fall to Target)
+
         protected void InitIntroSequence(Vector3 target)
         {
             introSequence = DOTween.Sequence();
@@ -58,5 +65,32 @@ namespace Card_3D
                 .SetDelay(delay)
                 .Restart();
         }
+
+        #endregion
+
+        #region Deal (Move (and Rotate) to Target)
+
+        protected void InitDealSequence(Transform target)
+        {
+            dealSequence = DOTween.Sequence();
+            var move = transform.DOMove(
+                transform.position, Duration);
+            var rotate = transform.DORotate(
+                transform.rotation.eulerAngles, Duration);
+
+            dealSequence
+                .Append(move)
+                .Join(rotate)
+                .SetAutoKill(false);
+        }
+
+        protected void PlayDealSequence(float delay)
+        {
+            dealSequence
+                .SetDelay(delay)
+                .Restart();
+        }
+
+        #endregion
     }
 }

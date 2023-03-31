@@ -42,5 +42,17 @@ namespace Card_3D
         {
             PlayShowTrumpSequenceReverse(_delay);
         }
+
+        private bool _isInit = false;
+        public void PlayDealSequence(Transform target)
+        {
+            if (!_isInit)
+            {
+                InitDealSequence(target);
+                _isInit = true;
+            }
+            else
+                PlayDealSequence(0);
+        }
     }
 }

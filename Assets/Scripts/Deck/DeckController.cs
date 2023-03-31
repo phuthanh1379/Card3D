@@ -74,4 +74,12 @@ public class DeckController : MonoBehaviour
             card.PlayEffectReverse();
         }
     }
+
+    public void DealCard(Transform target)
+    {
+        // Top card
+        var card = _cards[^1];
+        
+        card.PlayDealSequence(target);
+    }
 }
