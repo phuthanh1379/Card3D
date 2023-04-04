@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Card_3D;
+using DG.Tweening;
+using Unity.Android.Types;
 using UnityEngine;
 
 public class DeckController : MonoBehaviour
@@ -27,7 +29,7 @@ public class DeckController : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
-            ShowTrump(1);
+            ShowTrump(3);
         
         if (Input.GetKeyDown(KeyCode.Q))
             BackToDeck();
@@ -39,6 +41,7 @@ public class DeckController : MonoBehaviour
         var rnd = new System.Random();
         for (var i = 0; i < quantity; i++)
         {
+            // Spawn random
             SpawnCard(cardInfo[rnd.Next(cardInfo.Count)], i * GameConstants.CardWidth, i);
         }
     }
@@ -58,6 +61,14 @@ public class DeckController : MonoBehaviour
         _cards.Add(card);
     }
 
+    private void ReIndex()
+    {
+        for (var i = 0; i < _cards.Count; i++)
+        {
+            _cards[i].Index = i;
+        }
+    }
+
     /// <summary>
     /// Make all cards go back to the deck
     /// </summary>
@@ -70,6 +81,7 @@ public class DeckController : MonoBehaviour
         }
 
         if (_cards.Count <= 0) return;
+        ReIndex();
         foreach (var card in _cards)
         {
             card.JumpRotateCard(transform, false);
@@ -90,9 +102,9 @@ public class DeckController : MonoBehaviour
     {
         if (_cards.Count <= 0) return;
 
-        // Top card
         for (var i = 0; i < step; i++)
         {
+            // Top card 
             var card = _cards[^1];
             _dealt.Add(card);
             _cards.Remove(card);
@@ -120,6 +132,56 @@ public class DeckController : MonoBehaviour
     }
 
     public void PickUpCards(Transform target)
+    {
+        if (_cards.Count <= 0) return;
+
+        // x 0.1, y 0.001, yRotate = 8
+        var xStep = 0.1f;
+        var yStep = 0.001f;
+        var yRotate = 8f;
+
+        if (_cards.Count % 2 != 0)
+        {
+            var m1 = _cards.Count / 2;
+            var m2 = _cards.Count / 2 - 1;
+
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1) : (i - m2); 
+                var pos = new Vector3(step * xStep- target.position.x, step * yStep - target.position.y, target.position.z);
+                var t1 = _cards[i].LocalMove(pos);
+                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
+
+                var sequence = DOTween.Sequence();
+                sequence = _cards[i].JumpRotateSequence(target);
+                sequence
+                    .Append(t1)
+                    .Join(t2)
+                    .Play();
+            }
+        }
+        else
+        {
+            var m = _cards.Count / 2;
+
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                var step = i - m;
+                var pos = new Vector3(step * xStep- target.position.x, step * yStep - target.position.y, target.position.z);
+                var t1 = _cards[i].LocalMove(pos);
+                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
+                
+                var sequence = DOTween.Sequence();
+                sequence = _cards[i].JumpRotateSequence(target);
+                sequence
+                    .Append(t1)
+                    .Join(t2)
+                    .Play();
+            }
+        }
+    }
+
+    public void MoveToHands(Transform target)
     {
         
     }

@@ -8,6 +8,8 @@ public class BoardManager : MonoBehaviour
 
     [Header("Hands")] 
     [SerializeField] private List<Transform> hands = new();
+    [SerializeField] private Transform playerHand;
+    [SerializeField] private Transform playerIntro;
 
     [Header("Deal Settings")] 
     [SerializeField] private List<int> steps = new();
@@ -28,6 +30,12 @@ public class BoardManager : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Space))
             DealSteps();
+        
+        if (Input.GetKeyDown(KeyCode.D))
+            MoveToHands(playerHand);
+        
+        if (Input.GetKeyDown(KeyCode.E))
+            PickupCards(playerIntro);
     }
 
     private void DealSteps()
@@ -49,5 +57,15 @@ public class BoardManager : MonoBehaviour
     private void MoveCards(Transform target)
     {
         deck.MoveCards(target);
+    }
+
+    private void PickupCards(Transform target)
+    {
+        deck.PickUpCards(target);
+    }
+    
+    private void MoveToHands(Transform target)
+    {
+        deck.MoveToHands(target);
     }
 }

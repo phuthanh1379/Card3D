@@ -51,8 +51,29 @@ namespace Card_3D
                 .Append(Jump(pos))
                 .Join(Rotate(rot))
                 .SetDelay(delay)
+                .OnPlay(() =>
+                {
+                    if (target.name == "Hand-South")
+                        Debug.LogWarning($"{Index} -- {target.name} ");
+                    else
+                        Debug.Log($"{Index} -- {target.name} ");
+                })
                 .Play();
         }
-        
+
+        public Sequence JumpRotateSequence(Transform target, bool isDelayed = true)
+        {
+            var pos = target.position + new Vector3(0f, _yPos, 0f);
+            var rot = target.rotation.eulerAngles;
+
+            var delay = isDelayed ? _delay : 0;
+
+            var sequence = DOTween.Sequence();
+            return sequence
+                .Append(Jump(pos))
+                .Join(Rotate(rot))
+                .SetDelay(delay)
+                ;
+        }
     }
 }

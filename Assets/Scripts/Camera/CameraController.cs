@@ -25,6 +25,8 @@ public class CameraController : MonoBehaviour
     private const Ease EaseType = Ease.InOutQuad;
     private CameraMode _currentMode;
 
+    public static event Action<CameraMode> CameraChanges;
+
     private void Awake()
     {
         overLookSequence = DOTween.Sequence();
@@ -87,5 +89,6 @@ public class CameraController : MonoBehaviour
             default:
                 break;
         }
+        CameraChanges?.Invoke(mode);
     }
 }
