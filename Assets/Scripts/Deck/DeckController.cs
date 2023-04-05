@@ -140,43 +140,63 @@ public class DeckController : MonoBehaviour
         var yStep = 0.001f;
         var yRotate = 8f;
 
+        Debug.Log(_cards.Count % 2);
         if (_cards.Count % 2 != 0)
         {
-            var m1 = _cards.Count / 2;
-            var m2 = _cards.Count / 2 - 1;
-
-            for (var i = 0; i < _cards.Count; i++)
-            {
-                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1) : (i - m2); 
-                var pos = new Vector3(step * xStep- target.position.x, step * yStep - target.position.y, target.position.z);
-                var t1 = _cards[i].LocalMove(pos);
-                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
-
-                var sequence = DOTween.Sequence();
-                sequence = _cards[i].JumpRotateSequence(target);
-                sequence
-                    .Append(t1)
-                    .Join(t2)
-                    .Play();
-            }
-        }
-        else
-        {
             var m = _cards.Count / 2;
+            var finalSeq = DOTween.Sequence();
 
             for (var i = 0; i < _cards.Count; i++)
             {
                 var step = i - m;
-                var pos = new Vector3(step * xStep- target.position.x, step * yStep - target.position.y, target.position.z);
-                var t1 = _cards[i].LocalMove(pos);
+                var pos = target.position + new Vector3(step * xStep, step * yStep, 0f);
+                var t1 = _cards[i].Move(pos);
                 var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
                 
-                var sequence = DOTween.Sequence();
-                sequence = _cards[i].JumpRotateSequence(target);
-                sequence
+                var seq = _cards[i].JumpRotateSequence(target);
+                finalSeq
                     .Append(t1)
                     .Join(t2)
-                    .Play();
+                    .SetDelay(0)
+                    ;
+
+                if (i == _cards.Count - 1)
+                    seq.OnComplete(() => finalSeq.Play());
+
+                seq.Play();
+            }
+        }
+        else
+        {
+            var m1 = _cards.Count / 2 - 1;
+            var m2 = _cards.Count / 2;
+
+            var finalSeq = DOTween.Sequence();
+            
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                var step = 0;
+                if (i == m1) 
+                    step = m1;
+                else if (i == m2) 
+                    step = m2;
+                else 
+                    step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1) : (i - m2);
+                var pos = target.position + new Vector3(step * xStep, step * yStep, 0f);
+                var t1 = _cards[i].Move(pos);
+                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
+
+                var seq = _cards[i].JumpRotateSequence(target);
+                finalSeq
+                    .Append(t1)
+                    .Join(t2)
+                    .SetDelay(0)
+                    ;
+
+                if (i == _cards.Count - 1)
+                    seq.OnComplete(() => finalSeq.Play());
+
+                seq.Play();
             }
         }
     }

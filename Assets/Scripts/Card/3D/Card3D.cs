@@ -1,3 +1,4 @@
+using Audio;
 using DG.Tweening;
 using UnityEngine;
 
@@ -53,10 +54,12 @@ namespace Card_3D
                 .SetDelay(delay)
                 .OnPlay(() =>
                 {
-                    if (target.name == "Hand-South")
-                        Debug.LogWarning($"{Index} -- {target.name} ");
-                    else
-                        Debug.Log($"{Index} -- {target.name} ");
+                    // if (target.name == "Hand-South")
+                    //     Debug.LogWarning($"{Index} -- {target.name} ");
+                    // else
+                    //     Debug.Log($"{Index} -- {target.name} ");
+                    
+                    // AudioManager.Instance.PlaySfxOneShot("DealCard");
                 })
                 .Play();
         }
