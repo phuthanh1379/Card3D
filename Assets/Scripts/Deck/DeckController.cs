@@ -140,7 +140,6 @@ public class DeckController : MonoBehaviour
         var yStep = 0.001f;
         var yRotate = 8f;
 
-        Debug.Log(_cards.Count % 2);
         if (_cards.Count % 2 != 0)
         {
             var m = _cards.Count / 2;
@@ -148,6 +147,8 @@ public class DeckController : MonoBehaviour
 
             for (var i = 0; i < _cards.Count; i++)
             {
+                _cards[i].transform.SetParent(target);
+                
                 var step = i - m;
                 var pos = target.position + new Vector3(step * xStep, step * yStep, 0f);
                 var t1 = _cards[i].Move(pos);
@@ -155,9 +156,8 @@ public class DeckController : MonoBehaviour
                 
                 var seq = _cards[i].JumpRotateSequence(target);
                 finalSeq
-                    .Append(t1)
+                    .Join(t1)
                     .Join(t2)
-                    .SetDelay(0)
                     ;
 
                 if (i == _cards.Count - 1)
@@ -175,22 +175,17 @@ public class DeckController : MonoBehaviour
             
             for (var i = 0; i < _cards.Count; i++)
             {
-                var step = 0;
-                if (i == m1) 
-                    step = m1;
-                else if (i == m2) 
-                    step = m2;
-                else 
-                    step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1) : (i - m2);
+                _cards[i].transform.SetParent(target);
+
+                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
                 var pos = target.position + new Vector3(step * xStep, step * yStep, 0f);
                 var t1 = _cards[i].Move(pos);
                 var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
 
                 var seq = _cards[i].JumpRotateSequence(target);
                 finalSeq
-                    .Append(t1)
+                    .Join(t1)
                     .Join(t2)
-                    .SetDelay(0)
                     ;
 
                 if (i == _cards.Count - 1)
