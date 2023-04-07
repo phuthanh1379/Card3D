@@ -2050,7 +2050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fecf917205d4db44d9005291340f63c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quantity: 9
+  quantity: 13
   cardPrefab: {fileID: 8114944173366972504, guid: f68d82ee7f77cdf4f901247cfdd3d089, type: 3}
   cardInfo:
   - {fileID: 11400000, guid: ee7306441eb857348875cd6f7c44b940, type: 2}
