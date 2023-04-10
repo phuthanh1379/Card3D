@@ -12,6 +12,11 @@ namespace Card_3D
         {
             return transform.DOLocalMove(target, Duration);
         }
+
+        public Tween LocalRotate(Vector3 target)
+        {
+            return transform.DOLocalRotate(target, Duration);
+        }
         
         public Tween Jump(Vector3 target, float jumpPower = 1f, int numJumps = 1)
         {

@@ -1,4 +1,5 @@
 using Audio;
+using Common;
 using DG.Tweening;
 using UnityEngine;
 
@@ -52,15 +53,6 @@ namespace Card_3D
                 .Append(Jump(pos))
                 .Join(Rotate(rot))
                 .SetDelay(delay)
-                .OnPlay(() =>
-                {
-                    // if (target.name == "Hand-South")
-                    //     Debug.LogWarning($"{Index} -- {target.name} ");
-                    // else
-                    //     Debug.Log($"{Index} -- {target.name} ");
-                    
-                    // AudioManager.Instance.PlaySfxOneShot("DealCard");
-                })
                 .Play();
         }
 
@@ -73,9 +65,9 @@ namespace Card_3D
 
             var sequence = DOTween.Sequence();
             return sequence
-                .Append(Jump(pos))
-                .Join(Rotate(rot))
-                .SetDelay(delay)
+                    .Append(Jump(pos))
+                    .Join(Rotate(rot))
+                    .SetDelay(delay)
                 ;
         }
     }

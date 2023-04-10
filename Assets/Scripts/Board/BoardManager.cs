@@ -31,9 +31,6 @@ public class BoardManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             DealSteps();
         
-        if (Input.GetKeyDown(KeyCode.D))
-            MoveToHands(playerHand);
-        
         if (Input.GetKeyDown(KeyCode.E))
             PickupCards(playerIntro);
     }
@@ -61,11 +58,6 @@ public class BoardManager : MonoBehaviour
 
     private void PickupCards(Transform target)
     {
-        deck.PickUpCards(target);
-    }
-    
-    private void MoveToHands(Transform target)
-    {
-        deck.MoveToHands(target);
+        deck.PickUpCards(target, playerHand);
     }
 }

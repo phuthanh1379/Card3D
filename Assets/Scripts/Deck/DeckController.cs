@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Card_3D;
+using Common;
 using DG.Tweening;
-using Unity.Android.Types;
+using Common;
 using UnityEngine;
 
 public class DeckController : MonoBehaviour
@@ -84,6 +85,7 @@ public class DeckController : MonoBehaviour
         ReIndex();
         foreach (var card in _cards)
         {
+            card.transform.SetParent(transform);
             card.JumpRotateCard(transform, false);
         }
     }
@@ -131,20 +133,17 @@ public class DeckController : MonoBehaviour
         }
     }
 
-    public void PickUpCards(Transform target)
+    /// <summary>
+    /// Animation when first pick up cards (before going to player's hand) 
+    /// </summary>
+    /// <param name="target"></param>
+    public void PickUpCards(Transform target, Transform hand)
     {
         if (_cards.Count <= 0) return;
 
-        // x 0.1, y 0.001, yRotate = 8
-        var xLim = 0.5f;
-        var zLim = 0.3f;
-        var a = new Vector3(-xLim, 0f, -zLim);
-        var b = new Vector3(0f, 0f, 0f);
-        var c= new Vector3(xLim, 0f, -zLim);
-        var xStep = 0.1f;
-        var yStep = 0.001f;
-        var zStep = 0.01f;
-        var yRotate = 10f;
+        var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+        var b = Vector3.zero;
+        var c= new Vector3(CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
 
         if (_cards.Count % 2 != 0)
         {
@@ -155,17 +154,15 @@ public class DeckController : MonoBehaviour
             {
                 _cards[i].transform.SetParent(target);
 
+                // Lerp to make curves
                 var t = (float) (i + 1) / (_cards.Count + 1);
-                Debug.Log(t);
                 var first = Vector3.Lerp(a, b, t);
                 var second = Vector3.Lerp(b, c, t);
                 var final = Vector3.Slerp(first, second, t);
 
                 var step = i - m;
-                var pos = target.position + new Vector3(step * xStep, step * yStep, step * zStep);
-                // var t1 = _cards[i].Move(new Vector3(target.position.x, yStep * i, target.position.z) + final);
-                var t1 = _cards[i].LocalMove(final + new Vector3(0f, i * yStep, 0f));
-                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
+                var t1 = _cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                var t2 = _cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
                 
                 var seq = _cards[i].JumpRotateSequence(target);
                 finalSeq
@@ -174,7 +171,12 @@ public class DeckController : MonoBehaviour
                     ;
 
                 if (i == _cards.Count - 1)
-                    seq.OnComplete(() => finalSeq.Play());
+                    seq.OnComplete(() =>
+                    {
+                        finalSeq
+                            .OnComplete(() => MoveToHands(hand))
+                            .Play();
+                    });
 
                 seq.Play();
             }
@@ -189,11 +191,16 @@ public class DeckController : MonoBehaviour
             for (var i = 0; i < _cards.Count; i++)
             {
                 _cards[i].transform.SetParent(target);
+                
+                // Lerp to make curves
+                var t = (float) (i + 1) / (_cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Slerp(first, second, t);
 
                 var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
-                var pos = target.position + new Vector3(step * xStep, step * yStep, step * zStep);
-                var t1 = _cards[i].Move(pos);
-                var t2 = _cards[i].Rotate(new Vector3(0f, step * yRotate, 0f));
+                var t1 = _cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                var t2 = _cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
                 var seq = _cards[i].JumpRotateSequence(target);
                 finalSeq
@@ -202,15 +209,68 @@ public class DeckController : MonoBehaviour
                     ;
 
                 if (i == _cards.Count - 1)
-                    seq.OnComplete(() => finalSeq.Play());
+                    seq.OnComplete(() =>
+                    {
+                        finalSeq
+                            .OnComplete(() => MoveToHands(hand))
+                            .Play();
+                    });
 
                 seq.Play();
             }
         }
     }
 
-    public void MoveToHands(Transform target)
+    /// <summary>
+    /// Move the picked up cards to player's hand
+    /// </summary>
+    /// <param name="target"></param>
+    private void MoveToHands(Transform target)
     {
+        var finalSeq = DOTween.Sequence();
+
+        if (_cards.Count % 2 != 0)
+        {
+            var m = _cards.Count / 2;
         
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                _cards[i].transform.SetParent(target);
+        
+                var step = i - m;
+                var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
+                var t1 = _cards[i].Move(pos);
+                var t2 = _cards[i].LocalRotate(Vector3.zero);
+                
+                finalSeq
+                    .Join(t1)
+                    .Join(t2)
+                    ;
+            }
+        }
+        else
+        {
+            var m1 = _cards.Count / 2 - 1;
+            var m2 = _cards.Count / 2;
+        
+            for (var i = 0; i < _cards.Count; i++)
+            {
+                _cards[i].transform.SetParent(target);
+        
+                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
+                var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
+                var t1 = _cards[i].Move(pos);
+                var t2 = _cards[i].LocalRotate(Vector3.zero);
+        
+                finalSeq
+                    .Join(t1)
+                    .Join(t2)
+                    ;
+            }
+        }
+
+        finalSeq
+            .SetDelay(0.5f)
+            .Play();
     }
 }
