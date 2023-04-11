@@ -41,7 +41,8 @@ public class BoardManager : MonoBehaviour
         {
             foreach (var hand in hands)
             {
-                DealCard(step, hand);
+                // DealCard(step, hand);
+                deck.DealCard(step, hand, intro: playerIntro, hand: playerHand);
             }
         }
     }

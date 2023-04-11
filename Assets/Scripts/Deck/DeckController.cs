@@ -113,6 +113,23 @@ public class DeckController : MonoBehaviour
             card.JumpRotateCard(target);
         }
     }
+    
+    public void DealCard(int step, Transform target, Transform intro, Transform hand)
+    {
+        if (_cards.Count <= 0) return;
+
+        for (var i = 0; i < step; i++)
+        {
+            // Top card 
+            var card = _cards[^1];
+            _dealt.Add(card);
+            _cards.Remove(card);
+            var seq = card.JumpRotateSequence(target);
+            seq
+                .OnComplete(() => PickUpCards(intro, hand))
+                .Play();
+        }
+    }
 
     public void MoveCards(Transform target)
     {
@@ -139,6 +156,7 @@ public class DeckController : MonoBehaviour
     /// <param name="target"></param>
     public void PickUpCards(Transform target, Transform hand)
     {
+        Debug.Log("Pickup");
         if (_cards.Count <= 0) return;
 
         var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
