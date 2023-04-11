@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using Card_3D;
+using UnityEngine;
+
 namespace Common
 {
     public static class GameConstants
@@ -24,5 +29,21 @@ namespace Common
         // 0.625f for a close-tight arrangement of cards
         public const float XStep = 0.35f;
         public const float YStep = 0.001f;
+    }
+    
+    public enum Direction
+    {
+        South = 0,
+        East = 1,
+        North = 2,
+        West = 3
+    }
+
+    [Serializable]
+    public class Hand
+    {
+        public Direction direction;
+        public Transform holder;
+        public List<Card3D> cards = new();
     }
 }

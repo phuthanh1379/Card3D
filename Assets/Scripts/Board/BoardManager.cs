@@ -1,64 +1,50 @@
 using System;
 using System.Collections.Generic;
+using Common;
 using UnityEngine;
+using Deck;
 
 public class BoardManager : MonoBehaviour
 {
     [SerializeField] private DeckController deck;
 
     [Header("Hands")] 
-    [SerializeField] private List<Transform> hands = new();
+    [SerializeField] private List<Hand> hands = new();
     [SerializeField] private Transform playerHand;
     [SerializeField] private Transform playerIntro;
 
     [Header("Deal Settings")] 
     [SerializeField] private List<int> steps = new();
-
-    private void Update()
+    
+    public void DealSteps()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            MoveCards(hands[0]);
-        
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            MoveCards(hands[1]);
-        
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-            MoveCards(hands[2]);
-        
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-            MoveCards(hands[3]);
-        
-        if (Input.GetKeyDown(KeyCode.Space))
-            DealSteps();
-        
-        if (Input.GetKeyDown(KeyCode.E))
-            PickupCards(playerIntro);
-    }
-
-    private void DealSteps()
-    {
-        foreach (var step in steps)
+        // S - E - N - W
+        for (var i = 0; i < steps.Count; i++)
         {
+            var direction = (Direction) i;
+            
             foreach (var hand in hands)
             {
-                // DealCard(step, hand);
-                deck.DealCard(step, hand, intro: playerIntro, hand: playerHand);
+                DealCard(steps[i], hand);
+                // deck.DealCard(step, hand, intro: playerIntro, hand: playerHand);
             }
         }
     }
 
-    private void DealCard(int step, Transform target)
+    private void DealCard(int step, Hand hand)
     {
-        deck.DealCard(step, target);
+        deck.DealCard(step, hand);
     }
 
-    private void MoveCards(Transform target)
+    public void MoveCards(Direction direction)
     {
-        deck.MoveCards(target);
+        foreach (var hand in hands)
+            if (hand.direction == direction)
+                deck.MoveCards(hand.holder);
     }
 
-    private void PickupCards(Transform target)
+    public void PickupCards()
     {
-        deck.PickUpCards(target, playerHand);
+        deck.PickUpCards(playerIntro, playerHand);
     }
 }
