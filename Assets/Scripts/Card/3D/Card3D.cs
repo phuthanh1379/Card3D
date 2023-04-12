@@ -10,7 +10,16 @@ namespace Card_3D
         private CardInfo info;
         [SerializeField] private MeshRenderer cardRenderer;
 
-        public int Index { get; set; }
+        private int _index;
+        public int Index
+        {
+            set
+            {
+                _index = value;
+                _delay = (_index + 1) * GameConstants.CardAnimDuration;
+                _yPos = (_index + 1) * GameConstants.CardWidth;
+            } 
+        }
 
         private float _yPos;
         private float _delay;
@@ -29,9 +38,6 @@ namespace Card_3D
                 material
             };
 
-            _delay = (Index + 1) * GameConstants.CardAnimDuration;
-            _yPos = (Index + 1) * GameConstants.CardWidth;
-            
             // Intro sequence
             var sequence = DOTween.Sequence();
             sequence
@@ -41,7 +47,7 @@ namespace Card_3D
                 .Play();
         }
 
-        public void JumpRotateCard(Transform target, bool isDelayed = true)
+        public void JumpRotateCard(Transform target, bool isDelayed = true, bool setParent = false)
         {
             var pos = target.position + new Vector3(0f, _yPos, 0f);
             var rot = target.rotation.eulerAngles;
@@ -53,10 +59,15 @@ namespace Card_3D
                 .Append(Jump(pos))
                 .Join(Rotate(rot))
                 .SetDelay(delay)
+                .OnComplete(() =>
+                {
+                    if (setParent)
+                        transform.SetParent(target);
+                })
                 .Play();
         }
 
-        public Sequence JumpRotateSequence(Transform target, bool isDelayed = true)
+        public Sequence JumpRotateSequence(Transform target, bool isDelayed = true, bool setParent = false)
         {
             var pos = target.position + new Vector3(0f, _yPos, 0f);
             var rot = target.rotation.eulerAngles;
@@ -68,6 +79,11 @@ namespace Card_3D
                     .Append(Jump(pos))
                     .Join(Rotate(rot))
                     .SetDelay(delay)
+                    .OnComplete(() =>
+                    {
+                        if (setParent)
+                            transform.SetParent(target);
+                    })
                 ;
         }
     }

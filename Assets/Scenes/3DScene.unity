@@ -1284,7 +1284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &585047182
 Transform:
   m_ObjectHideFlags: 0
@@ -1599,7 +1599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &757657134
 Transform:
   m_ObjectHideFlags: 0
@@ -1844,24 +1844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fecf917205d4db44d9005291340f63c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardPrefab: {fileID: 8114944173366972504, guid: f68d82ee7f77cdf4f901247cfdd3d089, type: 3}
-  cardInfo:
-  - {fileID: 11400000, guid: ee7306441eb857348875cd6f7c44b940, type: 2}
-  - {fileID: 11400000, guid: f1c44cd7d14794546942cff279f56f53, type: 2}
-  - {fileID: 11400000, guid: 5b9fc60456b8ba7499c8d72e8015530e, type: 2}
-  - {fileID: 11400000, guid: c47fc775c69d03d438e6e9bad80e1e9d, type: 2}
-  - {fileID: 11400000, guid: 8c59f75797838bd4db559c628fa56bde, type: 2}
-  - {fileID: 11400000, guid: dc9cec094a275b64b9ac6bcc36cf0efb, type: 2}
-  - {fileID: 11400000, guid: 7b00bf1e7e12dde42978b83beb89370f, type: 2}
-  - {fileID: 11400000, guid: 24b0ffb917b4ae046832a0f8bbd619a9, type: 2}
-  - {fileID: 11400000, guid: 5d9bd088d0dc66c46a72346f3c7c66f7, type: 2}
-  - {fileID: 11400000, guid: 35de4528b5978964c86f16681871966f, type: 2}
-  - {fileID: 11400000, guid: 50ce2a403eacbf54ab38948c3691d565, type: 2}
-  - {fileID: 11400000, guid: effdf0ca633ef3c4fbc3cbaa4b80c6d9, type: 2}
-  - {fileID: 11400000, guid: da7b57fad4aa96344b8b66c20296c0f6, type: 2}
-  backMaterial: {fileID: 2100000, guid: d1de0ca8ed5940b46bbdeefde21b48f1, type: 2}
-  sideMaterial: {fileID: 2100000, guid: 8347ada98636a244ca456b5bb3500f9f, type: 2}
-  showTrumpTarget: {fileID: 2067273887}
 --- !u!1 &924065548
 GameObject:
   m_ObjectHideFlags: 0
@@ -2059,7 +2041,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3bed0a89592aeb45ba628fa7a90c7e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deck: {fileID: 898783641}
   hands:
   - direction: 0
     holder: {fileID: 1203650539}
@@ -2073,9 +2054,6 @@ MonoBehaviour:
   - direction: 3
     holder: {fileID: 461736206}
     cards: []
-  playerHand: {fileID: 1348001239}
-  playerIntro: {fileID: 256507046}
-  steps: 010000000200000001000000
 --- !u!1 &1090043696
 GameObject:
   m_ObjectHideFlags: 0
@@ -8063,7 +8041,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 972867163}
   deck: {fileID: 898783641}
-  numberOfCards: 12
+  cardPrefab: {fileID: 8114944173366972504, guid: f68d82ee7f77cdf4f901247cfdd3d089, type: 3}
+  cardInfo:
+  - {fileID: 11400000, guid: ee7306441eb857348875cd6f7c44b940, type: 2}
+  - {fileID: 11400000, guid: f1c44cd7d14794546942cff279f56f53, type: 2}
+  - {fileID: 11400000, guid: 5b9fc60456b8ba7499c8d72e8015530e, type: 2}
+  - {fileID: 11400000, guid: c47fc775c69d03d438e6e9bad80e1e9d, type: 2}
+  - {fileID: 11400000, guid: 8c59f75797838bd4db559c628fa56bde, type: 2}
+  - {fileID: 11400000, guid: dc9cec094a275b64b9ac6bcc36cf0efb, type: 2}
+  - {fileID: 11400000, guid: 7b00bf1e7e12dde42978b83beb89370f, type: 2}
+  - {fileID: 11400000, guid: 24b0ffb917b4ae046832a0f8bbd619a9, type: 2}
+  - {fileID: 11400000, guid: 5d9bd088d0dc66c46a72346f3c7c66f7, type: 2}
+  - {fileID: 11400000, guid: 35de4528b5978964c86f16681871966f, type: 2}
+  - {fileID: 11400000, guid: 50ce2a403eacbf54ab38948c3691d565, type: 2}
+  - {fileID: 11400000, guid: effdf0ca633ef3c4fbc3cbaa4b80c6d9, type: 2}
+  - {fileID: 11400000, guid: da7b57fad4aa96344b8b66c20296c0f6, type: 2}
+  backMaterial: {fileID: 2100000, guid: d1de0ca8ed5940b46bbdeefde21b48f1, type: 2}
+  sideMaterial: {fileID: 2100000, guid: 8347ada98636a244ca456b5bb3500f9f, type: 2}
+  showTrumpTarget: {fileID: 2067273887}
+  playerIntro: {fileID: 256507046}
+  playerHand: {fileID: 1348001239}
+  numberOfCards: 20
+  steps: 010000000300000001000000
 --- !u!1 &1718610323
 GameObject:
   m_ObjectHideFlags: 0
@@ -13360,7 +13359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1792612962
 Transform:
   m_ObjectHideFlags: 0
@@ -14764,7 +14763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2116975062
 Transform:
   m_ObjectHideFlags: 0
