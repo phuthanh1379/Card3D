@@ -56,7 +56,7 @@ namespace Card_3D
 
             var sequence = DOTween.Sequence();
             sequence
-                .Append(Jump(pos))
+                .Append(JumpSequence(pos, noiseStrength: 0.1f))
                 .Join(Rotate(rot))
                 .SetDelay(delay)
                 .OnComplete(() =>

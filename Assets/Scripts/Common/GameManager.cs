@@ -382,6 +382,23 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
             BackToDeck();
+        
+        if (Input.GetKeyDown(KeyCode.Return))
+            Shake();
+    }
+
+    private void Shake()
+    {
+        foreach (var card in _cards)
+        {
+            var sequence = DOTween.Sequence();
+            var shakePos = card.ShakePosition();
+            var shakeRot = card.ShakeRotation();
+            sequence
+                // .Append(shakePos)
+                .Join(shakeRot)
+                .Play();
+        }
     }
 
     #endregion
