@@ -195,20 +195,23 @@ public class GameManager : MonoBehaviour
         private void PickUpCards(Transform target, Transform targetHand)
         {
             // Check if player has cards
-            var hand = board.GetHand(Direction.South);
-            if (hand == null) return;
-            if (hand.cards.Count <= 0) return;
+            // var hand = board.GetHand(Direction.South);
+            // if (hand == null) return;
+            // if (hand.cards.Count <= 0) return;
             
-            var cards = hand.cards;
-
+            // var cards = hand.cards;
+            var cards = _cards;
+            
             var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
             var b = Vector3.zero;
             var c = new Vector3(CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
 
+            var mainSequence = DOTween.Sequence();
+            var finalSeq = DOTween.Sequence();
+
             if (cards.Count % 2 != 0)
             {
                 var m = cards.Count / 2;
-                var finalSeq = DOTween.Sequence();
 
                 for (var i = 0; i < cards.Count; i++)
                 {
@@ -218,27 +221,17 @@ public class GameManager : MonoBehaviour
                     var t = (float)(i + 1) / (cards.Count + 1);
                     var first = Vector3.Lerp(a, b, t);
                     var second = Vector3.Lerp(b, c, t);
-                    var final = Vector3.Slerp(first, second, t);
+                    var final = Vector3.Lerp(first, second, t);
 
                     var step = i - m;
                     var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
                     var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
-                    var seq = cards[i].JumpRotateSequence(target, setParent: true);
+                    mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
                     finalSeq
                         .Join(t1)
                         .Join(t2)
                         ;
-
-                    if (i == cards.Count - 1)
-                        seq.OnComplete(() =>
-                        {
-                            finalSeq
-                                .OnComplete(() => MoveToHands(targetHand, cards))
-                                .Play();
-                        });
-
-                    seq.Play();
                 }
             }
             else
@@ -246,7 +239,6 @@ public class GameManager : MonoBehaviour
                 var m1 = cards.Count / 2 - 1;
                 var m2 = cards.Count / 2;
 
-                var finalSeq = DOTween.Sequence();
 
                 for (var i = 0; i < cards.Count; i++)
                 {
@@ -256,29 +248,24 @@ public class GameManager : MonoBehaviour
                     var t = (float)(i + 1) / (cards.Count + 1);
                     var first = Vector3.Lerp(a, b, t);
                     var second = Vector3.Lerp(b, c, t);
-                    var final = Vector3.Slerp(first, second, t);
+                    var final = Vector3.Lerp(first, second, t);
 
                     var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
                     var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
                     var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
-                    var seq = cards[i].JumpRotateSequence(target, setParent: true);
+                    mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
                     finalSeq
                         .Join(t1)
                         .Join(t2)
                         ;
-
-                    if (i == cards.Count - 1)
-                        seq.OnComplete(() =>
-                        {
-                            finalSeq
-                                .OnComplete(() => MoveToHands(targetHand, cards))
-                                .Play();
-                        });
-
-                    seq.Play();
                 }
             }
+
+            finalSeq.OnComplete(() => MoveToHands(playerHand, cards));
+            mainSequence
+                .Append(finalSeq)
+                .Play();
         }
 
     #endregion
