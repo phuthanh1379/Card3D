@@ -17,8 +17,8 @@ namespace Common
     public static class CardsPickUp
     {
         // Setting for 24 cards
-        public const float XLim = 2f;
-        public const float ZLim = 1.5f;
+        public const float XLim = 6f;
+        public const float ZLim = 3f;
         public const float YRotate = 5f;
         
         // Setting for 13 cards

@@ -5,6 +5,7 @@ using Card_3D;
 using Common;
 using Deck;
 using DG.Tweening;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<CardInfo> cardInfo = new();
     [SerializeField] private Material backMaterial;
     [SerializeField] private Material sideMaterial;
-    
+
     [Header("Target")]
     [SerializeField] private Transform showTrumpTarget;
     [SerializeField] private Transform playerIntro;
@@ -35,7 +36,7 @@ public class GameManager : MonoBehaviour
         // TODO: Init board
         
         // TODO: Init deck
-        
+        deck.Init();
     }
 
     #region Spawn
@@ -191,8 +192,7 @@ public class GameManager : MonoBehaviour
         /// Animation when first pick up cards (before going to player's hand) 
         /// </summary>
         /// <param name="target"></param>
-        /// <param name="targetHand"></param>
-        private void PickUpCards(Transform target, Transform targetHand)
+        private void PickUpCards(Transform target)
         {
             // Check if player has cards
             // var hand = board.GetHand(Direction.South);
@@ -266,6 +266,73 @@ public class GameManager : MonoBehaviour
             mainSequence
                 .Append(finalSeq)
                 .Play();
+        }
+
+        private void SlidingCards(Transform target)
+        {
+            var cards = _cards;
+            
+            var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+            var b = Vector3.zero;
+            var c = new Vector3(CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+
+            var mainSequence = DOTween.Sequence();
+            var finalSeq = DOTween.Sequence();
+            
+            var m1 = cards.Count / 2 - 1;
+            var m2 = cards.Count / 2;
+
+            for (var i = 0; i < cards.Count; i++)
+            {
+                cards[i].Index = i;
+
+                // Lerp to make curves
+                var t = (float)(i + 1) / (cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Lerp(first, second, t);
+                
+                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
+                var pos = final + new Vector3(0f, i * CardsPickUp.YStep, 0f);
+                var rot = new Vector3(0f, step * CardsPickUp.YRotate, 0f);
+                // var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                // var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
+
+                // mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
+                // finalSeq
+                //     .Join(t1)
+                //     .Join(t2)
+                //     ;
+
+                var i1 = i;
+                var move = deck.transform
+                    .DOMove(pos, 0.1f)
+                    .OnComplete(() =>
+                    {
+                        cards[i1].transform.SetParent(transform);
+                    })
+                    ;
+                var rotate = deck.transform.DORotate(rot, 0.1f);
+                mainSequence
+                    .Append(move)
+                    // .Join(rotate)
+                    ;
+
+                // var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
+                // var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                // var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
+
+                // mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
+                // finalSeq
+                //     .Join(t1)
+                //     .Join(t2)
+                //     ;
+            }
+            
+            // finalSeq.OnComplete(() => MoveToHands(playerHand, cards));
+            mainSequence
+                // .Append(finalSeq)
+                .Play(); 
         }
 
     #endregion
@@ -361,7 +428,7 @@ public class GameManager : MonoBehaviour
             DealSteps();
         
         if (Input.GetKeyDown(KeyCode.E))
-            PickUpCards(playerIntro, playerHand);
+            PickUpCards(playerIntro);
         
         // Deck
         if (Input.GetKeyDown(KeyCode.A))
@@ -372,6 +439,9 @@ public class GameManager : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Return))
             Shake();
+
+        if (Input.GetKeyDown(KeyCode.D))
+            SlidingCards(playerIntro);
     }
 
     private void Shake()
