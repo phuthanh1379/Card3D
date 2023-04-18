@@ -1,4 +1,5 @@
 ﻿using System;
+using Board;
 using DG.Tweening;
 using UnityEngine;
 
@@ -47,25 +48,25 @@ namespace Card_3D
             fallTween.Restart();
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!_isSnappable) return;
-            if (!other.CompareTag("TableSlot")) return;
-
-            _isTriggered = true;
-            fallTween.Complete();
-        
-            // rb.velocity = Vector3.zero;
-            var sequence = DOTween.Sequence();
-
-            var slot = other.GetComponent<BoardSlot>();
-            var position = slot == null ? other.transform.position : slot.GetSnapPosition();
-        
-            // Debug.Log($"x={position.x}, y={position.y}, z={position.z}");
-        
-            sequence
-                .Append(transform.DOMove(position, 0.5f))
-                .Play();
-        }
+        // private void OnTriggerEnter(Collider other)
+        // {
+        //     if (!_isSnappable) return;
+        //     if (!other.CompareTag("TableSlot")) return;
+        //
+        //     _isTriggered = true;
+        //     fallTween.Complete();
+        //
+        //     // rb.velocity = Vector3.zero;
+        //     var sequence = DOTween.Sequence();
+        //
+        //     var slot = other.GetComponent<BoardSlot>();
+        //     var position = slot == null ? other.transform.position : slot.GetSnapPosition();
+        //
+        //     // Debug.Log($"x={position.x}, y={position.y}, z={position.z}");
+        //
+        //     sequence
+        //         .Append(transform.DOMove(position, 0.5f))
+        //         .Play();
+        // }
     }
 }

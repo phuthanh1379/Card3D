@@ -1,16 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Board;
 using Card_3D;
 using Common;
 using Deck;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private BoardManager board;
     [SerializeField] private DeckController deck;
+    [SerializeField] private BoardSlot slot;
     
     [Header("Spawn Info -- Will move to CardDatabase or something")]
     [SerializeField] private Card3D cardPrefab;
@@ -107,10 +110,15 @@ public class GameManager : MonoBehaviour
     {
         if (_cards.Count <= 0) return;
 
+        var sequence = DOTween.Sequence();
+        var finalSequence = DOTween.Sequence();
         for (var i = 0; i < num; i++)
         {
-            _cards[^ (i + 1)].JumpRotateCard(showTrumpTarget, false);
+            sequence.Append(_cards[^ (i + 1)].JumpRotateSequence(showTrumpTarget, out var rePosTween, false));
+            finalSequence.Join(rePosTween);
         }
+
+        sequence.Append(finalSequence).Play();
     }
     
     /// <summary>
@@ -187,86 +195,86 @@ public class GameManager : MonoBehaviour
 
     #region Pickup Cards
 
-        /// <summary>
-        /// Animation when first pick up cards (before going to player's hand) 
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="targetHand"></param>
-        private void PickUpCards(Transform target, Transform targetHand)
+    /// <summary>
+    /// Animation when first pick up cards (before going to player's hand) 
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="targetHand"></param>
+    private void PickUpCards(Transform target, Transform targetHand)
+    {
+        // Check if player has cards
+        // var hand = board.GetHand(Direction.South);
+        // if (hand == null) return;
+        // if (hand.cards.Count <= 0) return;
+        
+        // var cards = hand.cards;
+        var cards = _cards;
+        
+        var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+        var b = Vector3.zero;
+        var c = new Vector3(CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+
+        var mainSequence = DOTween.Sequence();
+        var finalSeq = DOTween.Sequence();
+
+        if (cards.Count % 2 != 0)
         {
-            // Check if player has cards
-            // var hand = board.GetHand(Direction.South);
-            // if (hand == null) return;
-            // if (hand.cards.Count <= 0) return;
-            
-            // var cards = hand.cards;
-            var cards = _cards;
-            
-            var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
-            var b = Vector3.zero;
-            var c = new Vector3(CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
+            var m = cards.Count / 2;
 
-            var mainSequence = DOTween.Sequence();
-            var finalSeq = DOTween.Sequence();
-
-            if (cards.Count % 2 != 0)
+            for (var i = 0; i < cards.Count; i++)
             {
-                var m = cards.Count / 2;
+                cards[i].Index = i;
 
-                for (var i = 0; i < cards.Count; i++)
-                {
-                    cards[i].Index = i;
+                // Lerp to make curves
+                var t = (float)(i + 1) / (cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Lerp(first, second, t);
 
-                    // Lerp to make curves
-                    var t = (float)(i + 1) / (cards.Count + 1);
-                    var first = Vector3.Lerp(a, b, t);
-                    var second = Vector3.Lerp(b, c, t);
-                    var final = Vector3.Lerp(first, second, t);
+                var step = i - m;
+                var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
-                    var step = i - m;
-                    var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
-                    var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
-
-                    mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
-                    finalSeq
-                        .Join(t1)
-                        .Join(t2)
-                        ;
-                }
+                mainSequence.Join(cards[i].JumpRotateSequence(target, out var rePosTween, useNoise: false, setParent: true));
+                finalSeq
+                    .Join(t1)
+                    .Join(t2)
+                    ;
             }
-            else
-            {
-                var m1 = cards.Count / 2 - 1;
-                var m2 = cards.Count / 2;
-
-
-                for (var i = 0; i < cards.Count; i++)
-                {
-                    cards[i].Index = i;
-
-                    // Lerp to make curves
-                    var t = (float)(i + 1) / (cards.Count + 1);
-                    var first = Vector3.Lerp(a, b, t);
-                    var second = Vector3.Lerp(b, c, t);
-                    var final = Vector3.Lerp(first, second, t);
-
-                    var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
-                    var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
-                    var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
-
-                    mainSequence.Join(cards[i].JumpRotateSequence(target, setParent: true));
-                    finalSeq
-                        .Join(t1)
-                        .Join(t2)
-                        ;
-                }
-            }
-
-            finalSeq.OnComplete(() => MoveToHands(playerHand, cards));
-            mainSequence
-                .Append(finalSeq)
-                .Play();
         }
+        else
+        {
+            var m1 = cards.Count / 2 - 1;
+            var m2 = cards.Count / 2;
+
+
+            for (var i = 0; i < cards.Count; i++)
+            {
+                cards[i].Index = i;
+
+                // Lerp to make curves
+                var t = (float)(i + 1) / (cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Lerp(first, second, t);
+
+                var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
+                var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
+                var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
+
+                mainSequence.Join(cards[i].JumpRotateSequence(target, out var rePosTween, useNoise: false, setParent: true));
+                finalSeq
+                    .Join(t1)
+                    .Join(t2)
+                    ;
+            }
+        }
+
+        finalSeq.OnComplete(() => MoveToHands(playerHand, cards));
+        mainSequence
+            .Append(finalSeq)
+            .Play();
+    }
 
     #endregion
 
@@ -370,22 +378,25 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
             BackToDeck();
         
-        if (Input.GetKeyDown(KeyCode.Return))
-            Shake();
+        if (Input.GetKeyDown(KeyCode.D))
+            Move();
     }
 
-    private void Shake()
+    private int index = 0;
+    private void Move()
     {
-        foreach (var card in _cards)
-        {
-            var sequence = DOTween.Sequence();
-            var shakePos = card.ShakePosition();
-            var shakeRot = card.ShakeRotation();
-            sequence
-                // .Append(shakePos)
-                .Join(shakeRot)
-                .Play();
-        }
+        index++;
+        var card = _cards[^ index];
+        slot.AddCard(card.transform, out var yPos);
+        var pos = slot.transform.position + new Vector3(0f, yPos, 0f);
+        var rot = slot.transform.rotation.eulerAngles;
+
+        var sequence = DOTween.Sequence();
+        sequence
+            .Append(card.Jump(pos))
+            .Join(card.Rotate(rot))
+            .Play()
+            ;
     }
 
     #endregion

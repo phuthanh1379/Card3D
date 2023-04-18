@@ -54,12 +54,10 @@ namespace Card_3D
             var x = new System.Random().Next(2);
             var y = new System.Random().Next(2);
             var z = new System.Random().Next(2);
-
             var posNoise = pos + new Vector3(x, y, z) * 0.15f;
             
-            
             var rot = target.rotation.eulerAngles;
-
+            
             var delay = isDelayed ? _delay : 0;
 
             var sequence = DOTween.Sequence();
@@ -105,24 +103,46 @@ namespace Card_3D
         //         .Play();
         // }
 
-        public Sequence JumpRotateSequence(Transform target, bool isDelayed = true, bool setParent = false)
+        public Sequence JumpRotateSequence(Transform target, out Tween rePosTween, bool useNoise = true, bool isDelayed = true, bool setParent = false)
         {
             var pos = target.position + new Vector3(0f, _yPos, 0f);
+            
+            var x = new System.Random().Next(2);
+            // var y = new System.Random().Next(2);
+            var z = new System.Random().Next(2);
+            var posNoise = pos + new Vector3(x, 0f, z) * 0.15f;
+            
             var rot = target.rotation.eulerAngles;
 
             var delay = isDelayed ? _delay : 0;
 
             var sequence = DOTween.Sequence();
-            return sequence
-                    .Append(Jump(pos))
-                    .Join(Rotate(rot))
-                    .SetDelay(delay)
-                    .OnComplete(() =>
-                    {
-                        if (setParent)
-                            transform.SetParent(target);
-                    })
-                ;
+            rePosTween = Move(pos).Play();
+            
+            if (useNoise)
+                return sequence
+                        .Append(Jump(posNoise))
+                        .Join(Rotate(rot))
+                        .SetDelay(delay)
+                        .OnComplete(() =>
+                        {
+                            if (setParent)
+                                transform.SetParent(target);
+                        })
+                    ;
+            else
+            {
+                return sequence
+                        .Append(Jump(pos))
+                        .Join(Rotate(rot))
+                        .SetDelay(delay)
+                        .OnComplete(() =>
+                        {
+                            if (setParent)
+                                transform.SetParent(target);
+                        })
+                    ;
+            }
         }
     }
 }

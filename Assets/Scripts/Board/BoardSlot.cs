@@ -1,25 +1,27 @@
+using Common;
 using UnityEngine;
 
-public class BoardSlot : MonoBehaviour
+namespace Board
 {
-    private Vector3 snapPosition;
-
-    private const float CardWidth = 0.001f;
-
-    private void Awake()
+    public class BoardSlot : MonoBehaviour
     {
-        snapPosition = transform.position;
-    }
+        public int Count { get; private set; }
 
-    public Vector3 GetSnapPosition()
-    {
-        var result = snapPosition;
-        snapPosition += new Vector3(0f, CardWidth, 0f);
-        return result;
-    }
+        public void Init()
+        {
+            Count = 0;
+        }
+        
+        public void AddCard(Transform card, out float yPos)
+        {
+            card.SetParent(transform);
+            Count++;
+            yPos = Count * GameConstants.CardWidth;
+        }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, Vector3.one);
+        public void RemoveCard()
+        {
+            Count--;
+        }
     }
 }
