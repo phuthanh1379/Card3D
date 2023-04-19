@@ -6,14 +6,12 @@ using Card_3D;
 using Common;
 using Deck;
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private BoardManager board;
     [SerializeField] private DeckController deck;
-    [SerializeField] private BoardSlot slot;
     
     [Header("Spawn Info -- Will move to CardDatabase or something")]
     [SerializeField] private Card3D cardPrefab;
@@ -36,6 +34,7 @@ public class GameManager : MonoBehaviour
     private void Init()
     {
         // TODO: Init board
+        board.Init();
         
         // TODO: Init deck
         
@@ -126,17 +125,24 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void DealSteps()
     {
+        var mainSeq = DOTween.Sequence();
+        var finalSeq = DOTween.Sequence();
+        
         // S - E - N - W
         foreach (var step in steps)
         {
             for (var j = 0; j < board.Hands.Count; j++)
             {
-                DealCard(step, board.Hands[j], (Direction) j);
+                DealCard(step, board.Hands[j], (Direction) j, ref mainSeq, ref finalSeq);
             }
         }
+
+        mainSeq
+            .Append(finalSeq)
+            .Play();
     }
 
-    private void DealCard(int step, Hand targetHand, Direction direction)
+    private void DealCard(int step, Hand targetHand, Direction direction, ref Sequence mainSeq, ref Sequence finalSeq)
     {
         if (_cards.Count <= 0) return;
 
@@ -144,15 +150,30 @@ public class GameManager : MonoBehaviour
         {
             // Top card 
             var card = _cards[^1];
-
-            foreach (var hand in board.Hands)
-            {
-                if (hand.direction == direction)
-                    hand.cards.Add(card);
-            }
-                
+            var hand = board.GetHand(direction);
+            var yPos = 0f;
+            hand?.AddCard(card, out yPos);
             _cards.Remove(card);
-            card.JumpRotateCard(targetHand.holder, setParent: true);
+
+            var sequence = DOTween.Sequence();
+
+            var pos = targetHand.slot.Position + new Vector3(0f, yPos, 0f);
+            var rot = targetHand.slot.Rotation;
+            var x = new System.Random().Next(2);
+            // var y = new System.Random().Next(2);
+            var z = new System.Random().Next(2);
+            var posNoise = pos + new Vector3(x, 0f, z) * 0.1f;
+            var rePosTween = card.Move(pos);
+
+            sequence
+                .Append(card.Jump(posNoise))
+                .Join(card.Rotate(rot))
+                ;
+
+            mainSeq.Append(sequence);
+            finalSeq.Join(rePosTween);
+
+            // card.JumpRotateCard(targetHand.slot.transform, setParent: true);
         }
     }
 
@@ -186,7 +207,7 @@ public class GameManager : MonoBehaviour
                 //     }
                 // }
                 
-                card.JumpRotateCard(hand.holder);
+                card.JumpRotateCard(hand.slot.transform);
             }
         }
     }
@@ -377,27 +398,24 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
             BackToDeck();
-        
-        if (Input.GetKeyDown(KeyCode.D))
-            Move();
     }
 
-    private int index = 0;
-    private void Move()
-    {
-        index++;
-        var card = _cards[^ index];
-        slot.AddCard(card.transform, out var yPos);
-        var pos = slot.transform.position + new Vector3(0f, yPos, 0f);
-        var rot = slot.transform.rotation.eulerAngles;
-
-        var sequence = DOTween.Sequence();
-        sequence
-            .Append(card.Jump(pos))
-            .Join(card.Rotate(rot))
-            .Play()
-            ;
-    }
+    // private int index = 0;
+    // private void Move()
+    // {
+    //     index++;
+    //     var card = _cards[^ index];
+    //     slot.AddCard(card.transform, out var yPos);
+    //     var pos = slot.transform.position + new Vector3(0f, yPos, 0f);
+    //     var rot = slot.transform.rotation.eulerAngles;
+    //
+    //     var sequence = DOTween.Sequence();
+    //     sequence
+    //         .Append(card.Jump(pos))
+    //         .Join(card.Rotate(rot))
+    //         .Play()
+    //         ;
+    // }
 
     #endregion
 }

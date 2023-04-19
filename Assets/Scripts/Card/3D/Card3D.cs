@@ -110,7 +110,7 @@ namespace Card_3D
             var x = new System.Random().Next(2);
             // var y = new System.Random().Next(2);
             var z = new System.Random().Next(2);
-            var posNoise = pos + new Vector3(x, 0f, z) * 0.15f;
+            var posNoise = pos + new Vector3(x, 0f, z) * 0.1f;
             
             var rot = target.rotation.eulerAngles;
 

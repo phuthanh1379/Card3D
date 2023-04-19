@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Board;
 using Card_3D;
 using UnityEngine;
 
@@ -57,7 +58,14 @@ namespace Common
     public class Hand
     {
         public Direction direction;
-        public Transform holder;
+        public BoardSlot slot;
         public List<Card3D> cards = new();
+
+        public void AddCard(Card3D card, out float yPos)
+        {
+            slot.AddCard(card.transform, out var y);
+            yPos = y;
+            cards.Add(card);
+        }
     }
 }

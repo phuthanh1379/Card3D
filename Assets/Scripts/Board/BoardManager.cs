@@ -11,6 +11,12 @@ public class BoardManager : MonoBehaviour
 
     public List<Hand> Hands => hands;
 
+    public void Init()
+    {
+        foreach (var hand in hands)
+            hand.slot.Init();
+    }
+    
     public Hand GetHand(Direction direction)
     {
         foreach (var hand in hands)
