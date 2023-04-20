@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 245062464}
   - component: {fileID: 245062465}
   m_Layer: 0
-  m_Name: Directional Light
+  m_Name: Directional Light (PlayerHand)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,14 +325,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245062463}
-  m_LocalRotation: {x: 0.17364816, y: 0, z: 0, w: 0.9848078}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.81915206, y: 0, z: 0, w: 0.57357645}
+  m_LocalPosition: {x: 0, y: 2, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 783166338}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 110, y: 0, z: 0}
 --- !u!108 &245062465
 Light:
   m_ObjectHideFlags: 0
@@ -351,7 +351,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -382,7 +382,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingLayerMask: 1
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
@@ -2240,7 +2240,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1348001238}
   m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
-  m_LocalPosition: {x: 0, y: 2, z: -3}
+  m_LocalPosition: {x: 0, y: 3, z: -2.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -7597,7 +7597,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 972867163}
   deck: {fileID: 898783641}
-  slot: {fileID: 1203650540}
   cardPrefab: {fileID: 8114944173366972504, guid: f68d82ee7f77cdf4f901247cfdd3d089, type: 3}
   cardInfo:
   - {fileID: 11400000, guid: ee7306441eb857348875cd6f7c44b940, type: 2}
@@ -7618,8 +7617,8 @@ MonoBehaviour:
   showTrumpTarget: {fileID: 2067273887}
   playerIntro: {fileID: 256507046}
   playerHand: {fileID: 1348001239}
-  numberOfCards: 24
-  steps: 010000000200000003000000
+  numberOfCards: 20
+  steps: 020000000200000001000000
 --- !u!1 &1718610323
 GameObject:
   m_ObjectHideFlags: 0
@@ -13759,17 +13758,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMousePosition: {x: 0, y: 0, z: 0}
-  slots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  hands:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  slots: []
+  hands: []
 --- !u!1 &2042498632
 GameObject:
   m_ObjectHideFlags: 0

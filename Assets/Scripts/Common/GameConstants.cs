@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Board;
 using Card_3D;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Common
@@ -10,6 +11,13 @@ namespace Common
     {
         public const float CardAnimDuration = 0.1f;
         public const float CardWidth = 0.001f;
+    }
+
+    public static class CardsDeal
+    {
+        public const float NoiseValue = 0.05f;
+        public const float Duration = 0.2f;
+        public const Ease EaseType = Ease.InSine;
     }
 
     /// <summary>
@@ -41,8 +49,13 @@ namespace Common
     {
         // 0.625f for a close-tight arrangement of cards
         // public const float XStep = 0.35f; // 5 -> 13 cards
-        public const float XStep = 0.25f; // 24 cards
         
+        // Setting for 24 cards
+        public const float XLim = 2f;
+        public const float ZLim = 0.5f;
+        public const float YRotate = 2f;
+        
+        public const float XStep = 0.25f; // 24 cards
         public const float YStep = 0.001f;
     }
     

@@ -103,21 +103,36 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region Shuffle
+
+    /// <summary>
+    /// Cut the deck to 2 equal size
+    /// </summary>
+    private void CutDeck()
+    {
+        for (var i = 0; i < _cards.Count / 2; i++)
+        {
+            _cards[i].JumpRotateCard(showTrumpTarget, false);
+        }
+    }
+
+    private void Shuffle()
+    {
+        if (_cards is not { Count: > 0 }) return;
+        CutDeck();
+    }
+
+    #endregion
+
     #region Deal Cards
     
     private void ShowTrump(int num)
     {
-        if (_cards.Count <= 0) return;
-
-        var sequence = DOTween.Sequence();
-        var finalSequence = DOTween.Sequence();
+        if (_cards.Count <= num) return;
         for (var i = 0; i < num; i++)
         {
-            sequence.Append(_cards[^ (i + 1)].JumpRotateSequence(showTrumpTarget, out var rePosTween, false));
-            finalSequence.Join(rePosTween);
+            _cards[^(i + 1)].JumpRotateCard(showTrumpTarget, false);
         }
-
-        sequence.Append(finalSequence).Play();
     }
     
     /// <summary>
@@ -162,18 +177,17 @@ public class GameManager : MonoBehaviour
             var x = new System.Random().Next(2);
             // var y = new System.Random().Next(2);
             var z = new System.Random().Next(2);
-            var posNoise = pos + new Vector3(x, 0f, z) * 0.1f;
+            var posNoise = pos + new Vector3(x, yPos, z) * CardsDeal.NoiseValue;
             var rePosTween = card.Move(pos);
 
             sequence
-                .Append(card.Jump(posNoise))
-                .Join(card.Rotate(rot))
+                .Append(card.Jump(posNoise, CardsDeal.Duration))
+                .Join(card.Rotate(rot, CardsDeal.Duration))
+                .SetEase(CardsDeal.EaseType)
                 ;
 
             mainSeq.Append(sequence);
             finalSeq.Join(rePosTween);
-
-            // card.JumpRotateCard(targetHand.slot.transform, setParent: true);
         }
     }
 
@@ -268,7 +282,6 @@ public class GameManager : MonoBehaviour
             var m1 = cards.Count / 2 - 1;
             var m2 = cards.Count / 2;
 
-
             for (var i = 0; i < cards.Count; i++)
             {
                 cards[i].Index = i;
@@ -309,6 +322,10 @@ public class GameManager : MonoBehaviour
     private void MoveToHands(Transform target, List<Card3D> cards)
     {
         var finalSeq = DOTween.Sequence();
+        
+        var a = new Vector3(-CardsToHand.XLim, 0f, -CardsToHand.ZLim);
+        var b = Vector3.zero;
+        var c = new Vector3(CardsToHand.XLim, 0f, -CardsToHand.ZLim);
 
         if (cards.Count % 2 != 0)
         {
@@ -316,13 +333,20 @@ public class GameManager : MonoBehaviour
 
             for (var i = 0; i < cards.Count; i++)
             {
+                // Lerp to make curves
+                var t = (float)(i + 1) / (cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Lerp(first, second, t);
+                
                 cards[i].Index = i;
                 cards[i].transform.SetParent(target);
 
                 var step = i - m;
-                var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
-                var t1 = cards[i].Move(pos);
-                var t2 = cards[i].LocalRotate(Vector3.zero);
+                // var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
+                var pos = final + new Vector3(0f, i * CardsToHand.YStep, 0f);
+                var t1 = cards[i].LocalMove(pos);
+                var t2 = cards[i].LocalRotate(new Vector3(0f, step * CardsToHand.YRotate, 0f));
 
                 finalSeq
                     .Join(t1)
@@ -337,13 +361,20 @@ public class GameManager : MonoBehaviour
 
             for (var i = 0; i < cards.Count; i++)
             {
+                // Lerp to make curves
+                var t = (float)(i + 1) / (cards.Count + 1);
+                var first = Vector3.Lerp(a, b, t);
+                var second = Vector3.Lerp(b, c, t);
+                var final = Vector3.Lerp(first, second, t);
+                
                 cards[i].Index = i;
                 cards[i].transform.SetParent(target);
 
                 var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
-                var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
-                var t1 = cards[i].Move(pos);
-                var t2 = cards[i].LocalRotate(Vector3.zero);
+                // var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
+                var pos = final + new Vector3(0f, i * CardsToHand.YStep, 0f);
+                var t1 = cards[i].LocalMove(pos);
+                var t2 = cards[i].LocalRotate(new Vector3(0f, step * CardsToHand.YRotate, 0f));
 
                 finalSeq
                     .Join(t1)
@@ -393,29 +424,18 @@ public class GameManager : MonoBehaviour
             PickUpCards(playerIntro, playerHand);
         
         // Deck
+        if (Input.GetKeyDown(KeyCode.X))
+            Shuffle();
+        
+        if (Input.GetKeyDown(KeyCode.D))
+            MoveToHands(playerHand, _cards);
+            
         if (Input.GetKeyDown(KeyCode.A))
-            ShowTrump(3);
+            ShowTrump(1);
 
         if (Input.GetKeyDown(KeyCode.Q))
             BackToDeck();
     }
-
-    // private int index = 0;
-    // private void Move()
-    // {
-    //     index++;
-    //     var card = _cards[^ index];
-    //     slot.AddCard(card.transform, out var yPos);
-    //     var pos = slot.transform.position + new Vector3(0f, yPos, 0f);
-    //     var rot = slot.transform.rotation.eulerAngles;
-    //
-    //     var sequence = DOTween.Sequence();
-    //     sequence
-    //         .Append(card.Jump(pos))
-    //         .Join(card.Rotate(rot))
-    //         .Play()
-    //         ;
-    // }
 
     #endregion
 }

@@ -10,29 +10,29 @@ namespace Card_3D
 
         #region Basic
 
-        public Tween LocalMove(Vector3 target)
+        public Tween LocalMove(Vector3 target, float duration = Duration)
         {
-            return transform.DOLocalMove(target, Duration);
+            return transform.DOLocalMove(target, duration);
         }
 
-        public Tween LocalRotate(Vector3 target)
+        public Tween LocalRotate(Vector3 target, float duration = Duration)
         {
-            return transform.DOLocalRotate(target, Duration);
+            return transform.DOLocalRotate(target, duration);
         }
         
-        public Tween Jump(Vector3 target, float jumpPower = 1f, int numJumps = 1)
+        public Tween Jump(Vector3 target, float duration = Duration, float jumpPower = 1f, int numJumps = 1)
         {
-            return transform.DOJump(target, jumpPower, numJumps, Duration);
+            return transform.DOJump(target, jumpPower, numJumps, duration);
         }
 
-        public Tween Move(Vector3 target)
+        public Tween Move(Vector3 target, float duration = Duration)
         {
-            return transform.DOMove(target, Duration);
+            return transform.DOMove(target, duration);
         }
 
-        public Tween Rotate(Vector3 target)
+        public Tween Rotate(Vector3 target, float duration = Duration)
         {
-            return transform.DORotate(target, Duration);
+            return transform.DORotate(target, duration);
         }
 
         public Tween ShakePosition()
