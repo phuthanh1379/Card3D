@@ -1,3 +1,4 @@
+using System;
 using Audio;
 using Common;
 using DG.Tweening;
@@ -23,6 +24,7 @@ namespace Card_3D
 
         private float _yPos;
         private float _delay;
+        private Vector3 _handLocalPos;
 
         public void RenderInfo(CardInfo cardInfo, Material backMaterial, Material sideMaterial, Transform deck)
         {
@@ -143,6 +145,58 @@ namespace Card_3D
                         })
                     ;
             }
+        }
+
+        public void SetHandPos(Vector3 handPos)
+        {
+            _handLocalPos = handPos;
+        }
+
+        public static event Action<int> HoverCard;
+        public static event Action<int> EndHoverCard;
+
+        private void OnEnable()
+        {
+            HoverCard += OnHoverCard;
+            EndHoverCard += OnEndHoverCard;
+        }
+
+        private void OnDisable()
+        {
+            HoverCard -= OnHoverCard;
+            EndHoverCard -= OnEndHoverCard;
+        }
+
+        private void OnHoverCard(int index)
+        {
+            if (_index == index) return;
+            if (_index < index)
+            {
+                transform.DOLocalMoveX(_handLocalPos.x - 0.15f, 0.2f).Play();
+            }
+            else
+            {
+                transform.DOLocalMoveX(_handLocalPos.x + 0.15f, 0.2f).Play();
+            }
+        }
+
+        private void OnEndHoverCard(int index)
+        {
+            if (_index == index) return;
+            transform.DOLocalMove(_handLocalPos, 0.2f).Play();
+        }
+
+        private void OnMouseEnter()
+        {
+            HoverCard?.Invoke(_index);
+            var pos = _handLocalPos + new Vector3(0f, 0.15f,  0.15f);
+            transform.DOLocalMove(pos, 0.2f).Play();
+        }
+
+        private void OnMouseExit()
+        {
+            EndHoverCard?.Invoke(_index);
+            transform.DOLocalMove(_handLocalPos, 0.2f).Play();
         }
     }
 }

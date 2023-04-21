@@ -112,68 +112,95 @@ public class GameManager : MonoBehaviour
         // Cut the deck to 2 equal size
         var half = new List<Card3D>();
         var temp = new List<Card3D>();
-        temp.AddRange(_cards);
 
-        var x = showTrumpTarget.position.x;
-        var d = 0.15f;
+        var x = 0.25f;
+        var z = 0.15f;
+        var d = 0.25f;
+        var c = _cards.Count;
 
         var cut = DOTween.Sequence();
-        Debug.Log($"h={_cards.Count / 2}, c={_cards.Count}");
 
-        for (var i = 0; i < _cards.Count / 2; i++)
+        for (var i = 0; i < c / 2; i++)
         {
-            cut.Append(_cards[i].transform.DOMoveX(x, d));
-            
+            cut.Join(_cards[i].transform.DOMoveX(showTrumpTarget.position.x, d));
             half.Add(_cards[i]);
             _cards.Remove(_cards[i]);
         }
 
-        Debug.Log($"h={half.Count}, c={_cards.Count}");
-        
         // Intertwine the cards from both halves
         var seq = DOTween.Sequence();
+        var seq2 = DOTween.Sequence();
+        var seq3 = DOTween.Sequence();
+        var seq4 = DOTween.Sequence();
         
-        for (var i = 0; i < temp.Count; i++)
+        for (var i = 0; i < c; i++)
         {
-            if (i % 2 == 0)
+            if (i % 2 != 0)
             {
                 if (half.Count > 0)
                 {
-                    seq.Append(half[0].transform.DOMoveX(x / 2, d));
+                    seq.Join(half[0].transform.DOMoveX(-x, d));
+                    seq2.Join(half[0].transform.DOLocalMoveZ(-z * (i - 1), d));
+                    seq3.Join(half[0].transform.DOMoveX(0f, d));
+                    seq4.Join(half[0].transform.DOLocalMoveZ(0f, d));
+                    
                     temp.Add(half[0]);
                     half.Remove(half[0]);
                 }
+                
                 else
                 {
                     if (_cards.Count <= 0) break;
-                    seq.Append(_cards[0].transform.DOMoveX(x / 2, d));
+                    
+                    seq.Join(_cards[0].transform.DOMoveX(x, d));
+                    seq2.Join(_cards[0].transform.DOLocalMoveZ(-z * (i - 1), d));
+                    seq3.Join(_cards[0].transform.DOMoveX(0f, d));
+                    seq4.Join(_cards[0].transform.DOLocalMoveZ(0f, d));
+
                     temp.Add(_cards[0]);
                     _cards.Remove(_cards[0]);
                 }
-                
-                Debug.Log($"h={half.Count}, c={_cards.Count}");
             }
             else
             {
                 if (_cards.Count > 0)
                 {
-                    seq.Append(_cards[0].transform.DOMoveX(x / 2, d));
+                    seq.Join(_cards[0].transform.DOMoveX(x, d));
+                    seq2.Join(_cards[0].transform.DOLocalMoveZ(-z * i, d));
+                    seq3.Join(_cards[0].transform.DOMoveX(0f, d));
+                    seq4.Join(_cards[0].transform.DOLocalMoveZ(0f, d));
+
                     temp.Add(_cards[0]);
                     _cards.Remove(_cards[0]);
                 }
+                
                 else
                 {
                     if (half.Count <= 0) break;
-                    seq.Append(half[0].transform.DOMoveX(x / 2, d));
+                    
+                    seq.Join(half[0].transform.DOMoveX(-x, d));
+                    seq2.Join(half[0].transform.DOLocalMoveZ(-z * i, d));
+                    seq3.Join(half[0].transform.DOMoveX(0f, d));
+                    seq4.Join(half[0].transform.DOLocalMoveZ(0f, d));
+
                     temp.Add(half[0]);
                     half.Remove(half[0]);
                 }
-                
-                Debug.Log($"h={half.Count}, c={_cards.Count}");
             }
         }
 
-        cut.Append(seq).Play();
+        cut
+            .Append(seq)
+            .Append(seq2)
+            .Append(seq3)
+            .Append(seq4)
+            .OnComplete(() =>
+            {
+                _cards.Clear();
+                _cards.AddRange(temp);
+                BackToDeck();
+            })
+            .Play();
     }
 
     #endregion
@@ -295,9 +322,9 @@ public class GameManager : MonoBehaviour
         // var hand = board.GetHand(Direction.South);
         // if (hand == null) return;
         // if (hand.cards.Count <= 0) return;
-        
+        //
         // var cards = hand.cards;
-        var cards = _cards;
+        var cards = _cards; 
         
         var a = new Vector3(-CardsPickUp.XLim, 0f, -CardsPickUp.ZLim);
         var b = Vector3.zero;
@@ -324,7 +351,12 @@ public class GameManager : MonoBehaviour
                 var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
                 var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
-                mainSequence.Join(cards[i].JumpRotateSequence(target, out var rePosTween, useNoise: false, setParent: true));
+                mainSequence.Join(cards[i].JumpRotateSequence(
+                    target, 
+                    out var rePosTween, 
+                    useNoise: false, 
+                    isDelayed: false,
+                    setParent: true));
                 finalSeq
                     .Join(t1)
                     .Join(t2)
@@ -350,7 +382,13 @@ public class GameManager : MonoBehaviour
                 var t1 = cards[i].LocalMove(final + new Vector3(0f, i * CardsPickUp.YStep, 0f));
                 var t2 = cards[i].Rotate(new Vector3(0f, step * CardsPickUp.YRotate, 0f));
 
-                mainSequence.Join(cards[i].JumpRotateSequence(target, out var rePosTween, useNoise: false, setParent: true));
+                mainSequence.Join(cards[i].JumpRotateSequence(
+                    target, 
+                    out var rePosTween, 
+                    useNoise: false, 
+                    isDelayed: false,
+                    setParent: true));
+                
                 finalSeq
                     .Join(t1)
                     .Join(t2)
@@ -399,6 +437,7 @@ public class GameManager : MonoBehaviour
                 var step = i - m;
                 // var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
                 var pos = final + new Vector3(0f, i * CardsToHand.YStep, 0f);
+                cards[i].SetHandPos(pos);
                 var t1 = cards[i].LocalMove(pos);
                 var t2 = cards[i].LocalRotate(new Vector3(0f, step * CardsToHand.YRotate, 0f));
 
@@ -427,6 +466,7 @@ public class GameManager : MonoBehaviour
                 var step = Mathf.Abs(i - m1) < Mathf.Abs(i - m2) ? (i - m1 - 0.5f) : (i - m2 + 0.5f);
                 // var pos = target.position + new Vector3(step * CardsToHand.XStep, step * CardsToHand.YStep, 0f);
                 var pos = final + new Vector3(0f, i * CardsToHand.YStep, 0f);
+                cards[i].SetHandPos(pos);
                 var t1 = cards[i].LocalMove(pos);
                 var t2 = cards[i].LocalRotate(new Vector3(0f, step * CardsToHand.YRotate, 0f));
 
