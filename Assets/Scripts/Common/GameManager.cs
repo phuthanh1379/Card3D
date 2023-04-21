@@ -104,22 +104,76 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Shuffle
-
-    /// <summary>
-    /// Cut the deck to 2 equal size
-    /// </summary>
-    private void CutDeck()
-    {
-        for (var i = 0; i < _cards.Count / 2; i++)
-        {
-            _cards[i].JumpRotateCard(showTrumpTarget, false);
-        }
-    }
-
+    
     private void Shuffle()
     {
         if (_cards is not { Count: > 0 }) return;
-        CutDeck();
+        
+        // Cut the deck to 2 equal size
+        var half = new List<Card3D>();
+        var temp = new List<Card3D>();
+        temp.AddRange(_cards);
+
+        var x = showTrumpTarget.position.x;
+        var d = 0.15f;
+
+        var cut = DOTween.Sequence();
+        Debug.Log($"h={_cards.Count / 2}, c={_cards.Count}");
+
+        for (var i = 0; i < _cards.Count / 2; i++)
+        {
+            cut.Append(_cards[i].transform.DOMoveX(x, d));
+            
+            half.Add(_cards[i]);
+            _cards.Remove(_cards[i]);
+        }
+
+        Debug.Log($"h={half.Count}, c={_cards.Count}");
+        
+        // Intertwine the cards from both halves
+        var seq = DOTween.Sequence();
+        
+        for (var i = 0; i < temp.Count; i++)
+        {
+            if (i % 2 == 0)
+            {
+                if (half.Count > 0)
+                {
+                    seq.Append(half[0].transform.DOMoveX(x / 2, d));
+                    temp.Add(half[0]);
+                    half.Remove(half[0]);
+                }
+                else
+                {
+                    if (_cards.Count <= 0) break;
+                    seq.Append(_cards[0].transform.DOMoveX(x / 2, d));
+                    temp.Add(_cards[0]);
+                    _cards.Remove(_cards[0]);
+                }
+                
+                Debug.Log($"h={half.Count}, c={_cards.Count}");
+            }
+            else
+            {
+                if (_cards.Count > 0)
+                {
+                    seq.Append(_cards[0].transform.DOMoveX(x / 2, d));
+                    temp.Add(_cards[0]);
+                    _cards.Remove(_cards[0]);
+                }
+                else
+                {
+                    if (half.Count <= 0) break;
+                    seq.Append(half[0].transform.DOMoveX(x / 2, d));
+                    temp.Add(half[0]);
+                    half.Remove(half[0]);
+                }
+                
+                Debug.Log($"h={half.Count}, c={_cards.Count}");
+            }
+        }
+
+        cut.Append(seq).Play();
     }
 
     #endregion

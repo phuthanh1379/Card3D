@@ -7617,7 +7617,7 @@ MonoBehaviour:
   showTrumpTarget: {fileID: 2067273887}
   playerIntro: {fileID: 256507046}
   playerHand: {fileID: 1348001239}
-  numberOfCards: 20
+  numberOfCards: 10
   steps: 020000000200000001000000
 --- !u!1 &1718610323
 GameObject:
