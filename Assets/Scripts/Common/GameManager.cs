@@ -77,11 +77,9 @@ public class GameManager : MonoBehaviour
         // TODO: Move to GameManager
         foreach (var hand in board.Hands)
         {
-            if (hand.cards.Count > 0)
-            {
-                _cards.AddRange(hand.cards);
-                hand.cards.Clear();
-            }
+            if (hand.cards.Count <= 0) continue;
+            _cards.AddRange(hand.cards);
+            hand.cards.Clear();
         }
 
         if (_cards.Count <= 0) return;

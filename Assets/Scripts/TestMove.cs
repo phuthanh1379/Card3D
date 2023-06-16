@@ -5,43 +5,45 @@ using UnityEngine;
 public class TestMove : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    private float _duration = 0.5f;
+    [SerializeField] private float duration;
     private Sequence _sequence;
 
     private void Start()
     {
-        _sequence = DOTween.Sequence();
+        var move = transform.DOMove(target.position, duration);
+        var stretch = transform.DOScale(new Vector3(1f, 1f, 1.5f), duration * 2 / 3).SetDelay(duration / 3);
         
-        var jump = transform.DOJump(target.position, 1.5f, 1, _duration);
-        
-        var fxDuration = _duration * 2 / 3;
-        var rotateNoise = transform
-            .DORotate(new Vector3(0f, 90f, 0f), fxDuration / 2)
-            ;
-        
-        var rotate  = transform
-                .DORotate(target.rotation.eulerAngles, fxDuration / 2)
-            ;
-        
-        var scale = transform
-            .DOScale(Vector3.one * 2f, fxDuration)
-            .SetDelay(fxDuration / 2)
-            ;
-        
-        var s2 = DOTween.Sequence();
-        s2
-            .Append(rotateNoise)
-            .Join(rotate)
+        // var jump = transform.DOJump(target.position, 1.5f, 1, _duration);
+        var rotate = transform.DORotate(target.rotation.eulerAngles, duration);
+        var elevate = transform.DOMoveY(1f, duration);
+        var stretch2 = transform.DOScale(Vector3.one * 2.5f, duration * 2 / 3).SetDelay(duration / 3);
+
+        var returnMove = transform.DOMoveY(0.0005f, duration);
+        var scale = transform.DOScale(Vector3.one * 2f, duration * 2 / 3).SetDelay(duration / 3);
+
+        var s1 = DOTween.Sequence();
+        s1
+            .Append(move)
+            .Join(stretch)
+            .SetEase(Ease.InOutBounce)
             .SetAutoKill(false)
-            .SetDelay(_duration / 3)
             ;
 
-      _sequence
-            .Append(jump)
-            .Join(s2)
+        var s2 = DOTween.Sequence();
+        s2
+            .Append(elevate)
+            .Join(rotate)
+            .Join(stretch2)
+            .SetAutoKill(false)
+            ;
+
+        _sequence = DOTween.Sequence();
+        _sequence
+            .Append(s1)
+            .Append(s2)
+            .Append(returnMove)
             .Join(scale)
             .SetAutoKill(false)
-            .SetEase(Ease.OutBounce)
             ;
 
         _sequence.Play();
