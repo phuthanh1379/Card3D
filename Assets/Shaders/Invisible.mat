@@ -24,12 +24,12 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _DistortionMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: d8da64bf267b74ae2a89ae8eab9e3c9b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Blending: 0.5393515
+    - _Blending: 0
     - _DisturbanceScale: 0.19
     - _MaskClipValue: 0.5
     - _RippleScale: 1.5
